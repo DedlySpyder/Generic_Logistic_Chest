@@ -1,0 +1,6 @@
+require("prototypes.entities.chest")
+require("prototypes.entities.replacement_entities")
+require("prototypes.items")
+require("prototypes.recipes")
+require("prototypes.technologies")
+require("styles")
