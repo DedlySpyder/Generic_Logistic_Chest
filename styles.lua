@@ -12,7 +12,6 @@ end
 data.raw["gui-style"].default["generic_passive_provider_chest_button"] =
 {
     type = "button_style",
-    parent = "button_style",
     width = 32,
     height = 32,
     top_padding = 0,
@@ -27,7 +26,6 @@ data.raw["gui-style"].default["generic_passive_provider_chest_button"] =
 data.raw["gui-style"].default["generic_active_provider_chest_button"] =
 {
     type = "button_style",
-    parent = "button_style",
     width = 32,
     height = 32,
     top_padding = 0,
@@ -42,7 +40,6 @@ data.raw["gui-style"].default["generic_active_provider_chest_button"] =
 data.raw["gui-style"].default["generic_storage_chest_button"] =
 {
     type = "button_style",
-    parent = "button_style",
     width = 32,
     height = 32,
     top_padding = 0,
@@ -57,7 +54,6 @@ data.raw["gui-style"].default["generic_storage_chest_button"] =
 data.raw["gui-style"].default["generic_requester_chest_button"] =
 {
     type = "button_style",
-    parent = "button_style",
     width = 32,
     height = 32,
     top_padding = 0,
@@ -67,4 +63,18 @@ data.raw["gui-style"].default["generic_requester_chest_button"] =
 	default_graphical_set = images("__Generic_Logistic_Chest__/graphics/gui/requester.png"),
 	hovered_graphical_set = images("__Generic_Logistic_Chest__/graphics/gui/requester-hover.png"),
 	clicked_graphical_set = images("__Generic_Logistic_Chest__/graphics/gui/requester-clicked.png")
+}
+
+data.raw["gui-style"].default["generic_buffer_chest_button"] =
+{
+    type = "button_style",
+    width = 32,
+    height = 32,
+    top_padding = 0,
+    right_padding = 0,
+    bottom_padding = 0,
+    left_padding = 0,
+	default_graphical_set = images("__Generic_Logistic_Chest__/graphics/gui/buffer.png"),
+	hovered_graphical_set = images("__Generic_Logistic_Chest__/graphics/gui/buffer-hover.png"),
+	clicked_graphical_set = images("__Generic_Logistic_Chest__/graphics/gui/buffer-clicked.png")
 }

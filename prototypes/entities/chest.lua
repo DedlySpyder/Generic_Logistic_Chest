@@ -4,6 +4,7 @@ data:extend({
     type = "container",
     name = "generic-logistic-chest",
     icon = "__Generic_Logistic_Chest__/graphics/icon/generic-logistic-chest.png",
+	icon_size = 32,
     flags = {"placeable-neutral", "player-creation"},
     minable = {mining_time = 1, result = "generic-logistic-chest"},
     max_health = 200,

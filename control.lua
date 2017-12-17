@@ -7,7 +7,8 @@ local check_for_table_removal = 60*60*10
 supportedChests = {	"generic-logistic-chest-passive-provider",
 					"generic-logistic-chest-active-provider",
 					"generic-logistic-chest-storage",
-					"generic-logistic-chest-requester"}
+					"generic-logistic-chest-requester",
+					"generic-logistic-chest-buffer"}
 
 --Check when an entity is placed
 function on_entity_placed(event)
@@ -87,6 +88,8 @@ function on_gui_click(event)
 			switchChest(player, "generic-logistic-chest-storage")
 		elseif (modButton == "requester") then
 			switchChest(player, "generic-logistic-chest-requester")
+		elseif (modButton == "buffer") then
+			switchChest(player, "generic-logistic-chest-buffer")
 		elseif (modButton == "close") then
 			destroySlectionGUI(player)
 		end
@@ -131,6 +134,7 @@ function drawSelectionGUI(player)
 		selectionButtonFlow.add{type="button", name="genericChests_activeProvider", style="generic_active_provider_chest_button"}
 		selectionButtonFlow.add{type="button", name="genericChests_storage", style="generic_storage_chest_button"}
 		selectionButtonFlow.add{type="button", name="genericChests_requester", style="generic_requester_chest_button"}
+		selectionButtonFlow.add{type="button", name="genericChests_buffer", style="generic_buffer_chest_button"}
 		
 		--Close button
 		selectionGUI.add{type="button", name="genericChests_close", caption={"generic-chest-close"}}
