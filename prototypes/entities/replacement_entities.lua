@@ -14,7 +14,7 @@ generic_logistic_chest_passive_provider.minable.result = "generic-logistic-chest
 generic_logistic_chest_active_provider.minable.result = "generic-logistic-chest"
 generic_logistic_chest_storage.minable.result = "generic-logistic-chest"
 generic_logistic_chest_requester.minable.result = "generic-logistic-chest"
-generic_logistic_chest_buffer.place_result = "generic-logistic-chest"
+generic_logistic_chest_buffer.minable.result = "generic-logistic-chest"
 
 generic_logistic_chest_passive_provider.order = "z"
 generic_logistic_chest_active_provider.order = "z"

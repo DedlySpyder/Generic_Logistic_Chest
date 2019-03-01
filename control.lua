@@ -130,11 +130,11 @@ function drawSelectionGUI(player)
 		local selectionButtonFlow = selectionGUI.add{type="flow", direction="horizontal"}
 		
 		--The selection buttons
-		selectionButtonFlow.add{type="button", name="genericChests_passiveProvider", style="generic_passive_provider_chest_button"}
-		selectionButtonFlow.add{type="button", name="genericChests_activeProvider", style="generic_active_provider_chest_button"}
-		selectionButtonFlow.add{type="button", name="genericChests_storage", style="generic_storage_chest_button"}
-		selectionButtonFlow.add{type="button", name="genericChests_requester", style="generic_requester_chest_button"}
-		selectionButtonFlow.add{type="button", name="genericChests_buffer", style="generic_buffer_chest_button"}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_passiveProvider", sprite="item/logistic-chest-passive-provider"}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_activeProvider", sprite="item/logistic-chest-active-provider"}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_storage", sprite="item/logistic-chest-storage"}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_requester", sprite="item/logistic-chest-requester"}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_buffer", sprite="item/logistic-chest-buffer"}
 		
 		--Close button
 		selectionGUI.add{type="button", name="genericChests_close", caption={"generic-chest-close"}}
