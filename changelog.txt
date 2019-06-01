@@ -1,0 +1,35 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.2.7
+Date: 31. 05. 2019
+  Features:
+    - Added changelog
+  Bugfixes:
+    - Fixed bug when placing multiple generic chests without making a GUI selection (any subsequent chests will just stay generic)
+---------------------------------------------------------------------------------------------------
+Version: 0.2.6
+Date: 01. 03. 2019
+  Features:
+    - Support for 0.16
+  Bugfixes:
+    - Fixed buffer chest bug, where mining it returned a buffer chest (instead of a generic chest)
+---------------------------------------------------------------------------------------------------
+Version: 0.2.5
+Date: 17. 12. 2017
+  Features:
+    - Support for 0.16
+    - Added buffer generic chest
+---------------------------------------------------------------------------------------------------
+Version: 0.2.4
+Date: 28. 04. 2017
+  Features:
+    - Support for 0.15
+---------------------------------------------------------------------------------------------------
+Version: 0.2.3
+Date: 30. 08. 2016
+  Features:
+    - Support for 0.14
+---------------------------------------------------------------------------------------------------
+Version: 0.2.2
+Date: 01. 08. 2016
+  Bugfixes:
+    - Chests now properly take the old chest's inventory when fast replacing (and will spill extra items)

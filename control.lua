@@ -17,11 +17,13 @@ function on_entity_placed(event)
 	
 	--If it is a generic chest, draw GUI and add it and the player match to the table
 	if (entity.name == "generic-logistic-chest") then
-		drawSelectionGUI(player)
-		global.genericChestPlayerData = doesGenericChestPlayerDataExistOrCreate(global.genericChestPlayerData)
-		
-		table.insert(global.genericChestPlayerData, {player=player, chest=entity})
-		debugLog(#global.genericChestPlayerData)
+		local drawn = drawSelectionGUI(player)
+			if drawn then
+			global.genericChestPlayerData = doesGenericChestPlayerDataExistOrCreate(global.genericChestPlayerData)
+			
+			table.insert(global.genericChestPlayerData, {player=player, chest=entity})
+			debugLog(#global.genericChestPlayerData)
+		end
 	end
 	
 	--Check for a ghost (from blueprints)
@@ -121,8 +123,10 @@ script.on_event(defines.events.on_tick, on_tick)
 
 --GUI Scripts
 --Draw the selection GUI
+-- Returns if the selection GUI was drawn or not
+-- If the GUI was not drawn, then the chest should just be ignored
 function drawSelectionGUI(player)
-	if (player ~= nil) then
+	if player and not player.gui.center["genericChestSelectionFrame"] then
 		--The frame to hold everything
 		local selectionGUI = player.gui.center.add{type="frame", name="genericChestSelectionFrame", direction="vertical", caption={"generic-chest-select-chest"}}
 		
@@ -138,7 +142,9 @@ function drawSelectionGUI(player)
 		
 		--Close button
 		selectionGUI.add{type="button", name="genericChests_close", caption={"generic-chest-close"}}
+		return true
 	end
+	return false
 end
 
 --Destroys the selection GUI
