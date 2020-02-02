@@ -134,11 +134,11 @@ function drawSelectionGUI(player)
 		local selectionButtonFlow = selectionGUI.add{type="flow", direction="horizontal"}
 		
 		--The selection buttons
-		selectionButtonFlow.add{type="sprite-button", name="genericChests_passiveProvider", sprite="item/logistic-chest-passive-provider"}
-		selectionButtonFlow.add{type="sprite-button", name="genericChests_activeProvider", sprite="item/logistic-chest-active-provider"}
-		selectionButtonFlow.add{type="sprite-button", name="genericChests_storage", sprite="item/logistic-chest-storage"}
-		selectionButtonFlow.add{type="sprite-button", name="genericChests_requester", sprite="item/logistic-chest-requester"}
-		selectionButtonFlow.add{type="sprite-button", name="genericChests_buffer", sprite="item/logistic-chest-buffer"}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_passiveProvider", sprite="item/logistic-chest-passive-provider", tooltip={"entity-name.generic-logistic-chest-passive-provider"}}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_activeProvider", sprite="item/logistic-chest-active-provider", tooltip={"entity-name.generic-logistic-chest-active-provider"}}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_storage", sprite="item/logistic-chest-storage", tooltip={"entity-name.generic-logistic-chest-storage"}}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_requester", sprite="item/logistic-chest-requester", tooltip={"entity-name.generic-logistic-chest-requester"}}
+		selectionButtonFlow.add{type="sprite-button", name="genericChests_buffer", sprite="item/logistic-chest-buffer", tooltip={"entity-name.generic-logistic-chest-buffer"}}
 		
 		--Close button
 		selectionGUI.add{type="button", name="genericChests_close", caption={"generic-chest-close"}}
@@ -206,30 +206,34 @@ end
 function switchChest(player, chestName)
 	for _, playerData in pairs(global.genericChestPlayerData) do
 		if (playerData.player == player) then
-			--Obtain the position
-			local position = playerData.chest.position
-			
-			--Obtain the old chest's full inventory
-			local chestContents = playerData.chest.get_inventory(defines.inventory.chest).get_contents()
-			
-			--Destroy the old chest and replace it
-			playerData.chest.destroy()
-			local newChest = player.surface.create_entity{name=chestName, position=position, force=player.force}
-			
-			--Replace items in the new chest
-			for item, count in pairs(chestContents) do
-				local itemStack = {name=item, count=count}
+			if (playerData.chest and playerData.chest.valid) then
+				--Obtain the position
+				local position = playerData.chest.position
 				
-				--Insert what can be inserted, and spill the rest on the ground
-				if (newChest.can_insert(itemStack)) then
-					local inserted = newChest.insert(itemStack)
-					if (inserted ~= count) then
-						itemStack.count = itemStack.count - inserted
+				--Obtain the old chest's full inventory
+				local chestContents = playerData.chest.get_inventory(defines.inventory.chest).get_contents()
+				
+				--Destroy the old chest and replace it
+				playerData.chest.destroy()
+				local newChest = player.surface.create_entity{name=chestName, position=position, force=player.force}
+				
+				--Replace items in the new chest
+				for item, count in pairs(chestContents) do
+					local itemStack = {name=item, count=count}
+					
+					--Insert what can be inserted, and spill the rest on the ground
+					if (newChest.can_insert(itemStack)) then
+						local inserted = newChest.insert(itemStack)
+						if (inserted ~= count) then
+							itemStack.count = itemStack.count - inserted
+							newChest.surface.spill_item_stack(newChest.position, itemStack)
+						end
+					else
 						newChest.surface.spill_item_stack(newChest.position, itemStack)
 					end
-				else
-					newChest.surface.spill_item_stack(newChest.position, itemStack)
 				end
+			else
+				playerData.player.print({"generic-chest-select-error-chest-not-valid", {"entity-name.generic-logistic-chest"}})
 			end
 		end
 	end

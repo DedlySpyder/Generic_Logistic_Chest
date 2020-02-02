@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.8
+Date: 02. 02. 2020
+  Features:
+    - Support for 0.18
+    - Added tooltips to selection GUI
+  Bugfixes:
+    - Fixed error when a selection is made after the generic chest is destroyed
+---------------------------------------------------------------------------------------------------
 Version: 0.2.7
 Date: 31. 05. 2019
   Features:
