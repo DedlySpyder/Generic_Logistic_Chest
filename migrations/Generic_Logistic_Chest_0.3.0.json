@@ -1,0 +1,21 @@
+{
+	"item": [
+		["generic-logistic-chest", "Generic_Logistic_logistic-chest"],
+		["passive_provider_dummy", "Generic_Logistic_logistic-chest-passive-provider"],
+		["active_provider_dummy", "Generic_Logistic_logistic-chest-active-provider"],
+		["storage_dummy", "Generic_Logistic_logistic-chest-storage"],
+		["requester_dummy", "Generic_Logistic_logistic-chest-requester"],
+		["buffer_dummy", "Generic_Logistic_logistic-chest-buffer"]
+	],
+	"entity": [
+		["generic-logistic-chest", "Generic_Logistic_logistic-chest"],
+		["generic-logistic-chest-passive-provider", "Generic_Logistic_logistic-chest-passive-provider"],
+		["generic-logistic-chest-active-provider", "Generic_Logistic_logistic-chest-active-provider"],
+		["generic-logistic-chest-storage", "Generic_Logistic_logistic-chest-storage"],
+		["generic-logistic-chest-requester", "Generic_Logistic_logistic-chest-requester"],
+		["generic-logistic-chest-buffer", "Generic_Logistic_logistic-chest-buffer"]
+	],
+	"recipe": [
+		["generic-logistic-chest", "Generic_Logistic_logistic-chest"]
+	]
+}
