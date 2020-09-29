@@ -1,4 +1,29 @@
-CHEST_GROUPS = {
+require("util")
+
+ChestGroups = {}
+
+ChestGroups.getGroups = function()
+	Util.debugLog("Looking up chest groups")
+	if mods then
+		return Util.filterTable(ChestGroups._RAW, function(group)
+			if mods[group.mod] then
+				Util.debugLog("Found group for " .. group.name .. " prerequisite mod " .. group.mod .. " enabled")
+				return true
+			else
+				Util.debugLog("Skipping group for " .. group.name .. " prerequisite mod " .. group.mod .. " disabled")
+			end
+		end)
+	elseif game then
+		return Util.filterTable(ChestGroups._RAW, function(group)
+			return game.active_mods[group.mod]
+		end)
+	else
+		Util.debugLog("WARN: Could not find mods or game, returning all chest groups")
+		return ChestGroups._RAW
+	end
+end
+
+ChestGroups._RAW = {
 	{
 		mod = "base",
 		name = "logistic-chest",

@@ -1,14 +1,7 @@
 require("scripts.generic_generation")
 require("scripts.chest_groups")
 
-if Util.DEBUG_MODE then
-	Util.debugLog("Listing all logistic containers: ")
-	for name, prototype in pairs(data.raw["logistic-container"]) do
-		Util.debugLog("  " .. name)
-	end
-end
-
-for _, group in ipairs(CHEST_GROUPS) do
+for _, group in ipairs(ChestGroups.getGroups()) do
 	Generic_Logistic_Generator.addGenericGroup(group)
 end
 

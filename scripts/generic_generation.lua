@@ -24,28 +24,24 @@ Generic_Logistic_Generator.generate = function()
 	
 	local newPrototypes = {}
 	for name, data in pairs(Generic_Logistic_Generator._groups) do
-		if mods[data.mod] then
-			Util.debugLog("Generating prototypes for generic group " .. name)
-			
-			local genericName = Util.MOD_PREFIX .. name
-			local localeName = data.localeName
-			local genericEntityBase = data.generic
-			
-			Util.debugLog("Generic chest name: " .. genericName)
-			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName))
-			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
-			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients))
-			
-			for _, replacement in ipairs(data.replacements) do
-				Util.debugLog("Generating replacement prototypes for " .. replacement)
-				table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementItem(replacement))
-				table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementEntity(replacement, genericName))
-			end
-			
-			Generic_Logistic_Generator._internal.GROUP_COUNT = Generic_Logistic_Generator._internal.GROUP_COUNT + 1
-		else
-			Util.debugLog("Skipping generation for " .. name .. " prerequisite mod " .. data.mod .. " disabled")
+		Util.debugLog("Generating prototypes for generic group " .. name)
+		
+		local genericName = Util.MOD_PREFIX .. name
+		local localeName = data.localeName
+		local genericEntityBase = data.generic
+		
+		Util.debugLog("Generic chest name: " .. genericName)
+		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName))
+		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
+		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients))
+		
+		for _, replacement in ipairs(data.replacements) do
+			Util.debugLog("Generating replacement prototypes for " .. replacement)
+			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementItem(replacement))
+			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementEntity(replacement, genericName))
 		end
+		
+		Generic_Logistic_Generator._internal.GROUP_COUNT = Generic_Logistic_Generator._internal.GROUP_COUNT + 1
 	end
 	data:extend(newPrototypes)
 	
