@@ -2,10 +2,10 @@ require("util")
 
 ChestGroups = {}
 
-ChestGroups.getGroups = function()
+function ChestGroups.getGroups()
 	Util.debugLog("Looking up chest groups")
 	if mods then
-		return Util.filterTable(ChestGroups._RAW, function(group)
+		return Util.Table.filter(ChestGroups._RAW, function(group)
 			if mods[group.mod] then
 				Util.debugLog("Found group for " .. group.name .. " prerequisite mod " .. group.mod .. " enabled")
 				return true
@@ -14,13 +14,33 @@ ChestGroups.getGroups = function()
 			end
 		end)
 	elseif game then
-		return Util.filterTable(ChestGroups._RAW, function(group)
+		return Util.Table.filter(ChestGroups._RAW, function(group)
 			return game.active_mods[group.mod]
 		end)
 	else
 		Util.debugLog("WARN: Could not find mods or game, returning all chest groups")
 		return ChestGroups._RAW
 	end
+end
+
+function ChestGroups.getGenericToReplacementMapping()
+	local mapping = {}
+	for _, group in ipairs(ChestGroups.getGroups()) do
+		local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+		mapping[Util.MOD_PREFIX .. group.name] = replacements
+	end
+	return mapping
+end
+
+function ChestGroups.getReplacementToGenericMapping()
+	local genericMapping = ChestGroups.getGenericToReplacementMapping()
+	local mapping = {}
+	for generic, replacements in pairs(genericMapping) do
+		for _, replacement in ipairs(replacements) do
+			mapping[replacement] = generic
+		end
+	end
+	return mapping
 end
 
 ChestGroups._RAW = {

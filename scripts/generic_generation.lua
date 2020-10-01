@@ -13,13 +13,13 @@ Generic_Logistic_Generator._groups = {}
 -- 		generic					- The entity name to base the generic chest of this group off of
 -- 		ingredients				- The ingredients used for the generic chest
 -- 		replacements			- A list of entity names to base the replacement chests off of
-Generic_Logistic_Generator.addGenericGroup = function(data)
+function Generic_Logistic_Generator.addGenericGroup(data)
 	Generic_Logistic_Generator._groups[data.name] = data
 end
 
 -- This should be called after all groups are added
 -- Though it will clear the current groups in case it is used multiple times, it will cause longer game load times
-Generic_Logistic_Generator.generate = function()
+function Generic_Logistic_Generator.generate()
 	Generic_Logistic_Generator._cache.cacheAllPrototypes()
 	
 	local newPrototypes = {}
@@ -55,7 +55,7 @@ end
 Generic_Logistic_Generator._internal = {}
 Generic_Logistic_Generator._internal.GROUP_COUNT = 0
 
-Generic_Logistic_Generator._internal.generifyIcons = function(item, isReplacement)
+function Generic_Logistic_Generator._internal.generifyIcons(item, isReplacement)
 	-- Move the icon spec back to icons if it doesn't already exist
 	if not item.icons then
 		item.icons = {
@@ -84,7 +84,7 @@ end
 
 -- entity		- the LuaEntity to modify
 -- newLayerFunc	- a function that will accept the current sprite's size and return a new layer to add to the sprite on top
-Generic_Logistic_Generator._internal.generifySprite = function(entity, newLayerFunc)
+function Generic_Logistic_Generator._internal.generifySprite(entity, newLayerFunc)
 	local sprite = entity.animation or entity.picture
 	if not sprite.layers then
 		sprite = {layers={sprite}}
@@ -106,7 +106,7 @@ Generic_Logistic_Generator._internal.generifySprite = function(entity, newLayerF
 end
 
 -- Replacement Chest Generation
-Generic_Logistic_Generator._internal.createReplacementItem = function(entityName)
+function Generic_Logistic_Generator._internal.createReplacementItem(entityName)
 	local item =  table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
 	item.localised_name = {"Generic_Logistic_generic_prefix", {"item-name." .. item.name}}
 	item.localised_description = {"item-description." .. item.name}
@@ -118,7 +118,7 @@ Generic_Logistic_Generator._internal.createReplacementItem = function(entityName
 	return item
 end
 
-Generic_Logistic_Generator._internal.createReplacementEntity = function(entityName, genericChestName)
+function Generic_Logistic_Generator._internal.createReplacementEntity(entityName, genericChestName)
 	local entity = table.deepcopy(Generic_Logistic_Generator._cache.ENTITY_CACHE[entityName])
 	entity.localised_name = {"Generic_Logistic_generic_prefix", {"entity-name." .. entity.name}}
 	entity.localised_description = {"entity-description." .. entity.name}
@@ -147,7 +147,7 @@ Generic_Logistic_Generator._internal.createReplacementEntity = function(entityNa
 end
 
 -- Generic Chest Generation
-Generic_Logistic_Generator._internal.createGenericChestItem = function(entityName, genericChestName, localeName)
+function Generic_Logistic_Generator._internal.createGenericChestItem(entityName, genericChestName, localeName)
 	local item = table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
 	item.localised_name = {"Generic_Logistic_generic_prefix", {localeName}}
 	item.localised_description = {"Generic_Logistic_generic_logistic_chest_description", {localeName}}
@@ -160,7 +160,7 @@ Generic_Logistic_Generator._internal.createGenericChestItem = function(entityNam
 	return item
 end
 
-Generic_Logistic_Generator._internal.createGenericChestEntity = function(entityName, genericChestName, localeName)
+function Generic_Logistic_Generator._internal.createGenericChestEntity(entityName, genericChestName, localeName)
 	local entity = table.deepcopy(Generic_Logistic_Generator._cache.ENTITY_CACHE[entityName])
 	entity.localised_name = {"Generic_Logistic_generic_prefix", {localeName}}
 	entity.localised_description = {"Generic_Logistic_generic_logistic_chest_description", {localeName}}
@@ -188,7 +188,7 @@ Generic_Logistic_Generator._internal.createGenericChestEntity = function(entityN
 	return entity
 end
 
-Generic_Logistic_Generator._internal.createGenericChestRecipe = function(entityName, genericChestName, ingredients)
+function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityName, genericChestName, ingredients)
 	local recipe = table.deepcopy(Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName].name])
 	recipe.name = genericChestName
 	recipe.enabled = false
@@ -208,7 +208,7 @@ end
 
 -- Cache stuff from data.raw
 Generic_Logistic_Generator._cache = {}
-Generic_Logistic_Generator._cache.clear = function ()
+function Generic_Logistic_Generator._cache.clear()
 	Generic_Logistic_Generator._cache.ENTITY_CACHE = {} -- cached by name
 	Generic_Logistic_Generator._cache.ITEM_CACHE = {} -- cached by name
 	Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE = {} -- cached by place_result
@@ -217,7 +217,7 @@ end
 Generic_Logistic_Generator._cache.clear() -- Initialize the caches
 
 
-Generic_Logistic_Generator._cache.cacheAllPrototypes = function()
+function Generic_Logistic_Generator._cache.cacheAllPrototypes()
 	local entityNames = {}
 	for _, group in pairs(Generic_Logistic_Generator._groups) do
 		entityNames[group.generic] = true
@@ -234,7 +234,7 @@ Generic_Logistic_Generator._cache.cacheAllPrototypes = function()
 end
 
 
-Generic_Logistic_Generator._cache.cacheEntities = function(entityNames)
+function Generic_Logistic_Generator._cache.cacheEntities(entityNames)
 	for name, prototype in pairs(data.raw["logistic-container"]) do
 		if entityNames[name] then
 			Util.debugLog("Caching entity " .. name)
@@ -243,7 +243,7 @@ Generic_Logistic_Generator._cache.cacheEntities = function(entityNames)
 	end
 end
 
-Generic_Logistic_Generator._cache.cacheItems = function()
+function Generic_Logistic_Generator._cache.cacheItems()
 	for _, item in pairs(data.raw["item"]) do
 		local placeResult = item.place_result
 		if placeResult and Generic_Logistic_Generator._cache.ENTITY_CACHE[placeResult] then
@@ -254,7 +254,7 @@ Generic_Logistic_Generator._cache.cacheItems = function()
 	end
 end
 
-Generic_Logistic_Generator._cache.cacheRecipes = function()
+function Generic_Logistic_Generator._cache.cacheRecipes()
 	for _, recipe in pairs(data.raw["recipe"]) do
 		local result = recipe.result
 		if result and Generic_Logistic_Generator._cache.ITEM_CACHE[result] then

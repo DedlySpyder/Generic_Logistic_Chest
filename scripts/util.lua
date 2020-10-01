@@ -31,8 +31,20 @@ function Util.mathMin(nums)
 	return math.min(unpack(t))
 end
 
+function Util.getEntityDataKey(entity)
+	local name = entity.name
+	if name == "entity-ghost" then
+		name = entity.ghost_name
+	end
+	
+	return entity.surface.name .. "_" .. entity.position.x .. "_" .. entity.position.y .. "_" .. name
+end
+
+
+Util.Table = {}
+
 -- Filter either a table or an array, if the function returns true then the value will stay
-function Util.filterTable(tbl, func)
+function Util.Table.filter(tbl, func)
 	local newTable = {}
 	local isArr = #tbl > 0
 	for k, v in pairs(tbl) do
@@ -42,6 +54,19 @@ function Util.filterTable(tbl, func)
 			else
 				newTable[k] = v
 			end
+		end
+	end
+	return newTable
+end
+
+function Util.Table.map(tbl, func)
+	local newTable = {}
+	local isArr = #tbl > 0
+	for k, v in pairs(tbl) do
+		if isArr then
+			table.insert(newTable, func(v))
+		else
+			newTable[k] = func(v)
 		end
 	end
 	return newTable
