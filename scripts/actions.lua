@@ -12,31 +12,34 @@ function Actions.switchGhost(ghostEntity)
 	if genericChestName then
 		Util.debugLog("Swapping ghost of " .. oldGhostName .. " to " .. genericChestName)
 		
-		local surface = ghost.surface
-		local position = ghost.position
-		local force = ghost.force
+		local surface = ghostEntity.surface
+		local position = ghostEntity.position
+		local force = ghostEntity.force
+		
+		local storageFilter = nil
+		if ghostEntity.ghost_prototype.logistic_mode == "storage" then
+			storageFilter = ghostEntity.storage_filter
+		end
 		
 		local requestFilters = {}
 		
-		--if (ghost_name == "generic-logistic-chest-requester") then -- TODO might need something for this
-		for index=1, ghost.request_slot_count do
-			local itemStack = ghost.get_request_slot(index)
+		for index=1, ghostEntity.request_slot_count do
+			local itemStack = ghostEntity.get_request_slot(index)
 			if itemStack then
 				table.insert(requestFilters, {index=index, name=itemStack.name, count=itemStack.count})
 			end
 		end
-		--end
 		
 		-- Destroy the old ghost and create a new one
-		ghost.destroy()
+		ghostEntity.destroy()
 		
 		local newGhost = surface.create_entity{name="entity-ghost", inner_name=genericChestName, position=position, force=force}
-		Storage.ChestData.add(newGhost, oldGhostName, requestFilters)
+		Storage.ChestData.add(newGhost, oldGhostName, requestFilters, storageFilter)
 	end
 end
 
 -- Returns the new entity
-function Actions.switchChest(entity, replacementName, requestFilters)
+function Actions.switchChest(entity, replacementName, requestFilters, storageFilter)
 	if entity and entity.valid then
 		local surface = entity.surface
 		local position = entity.position
@@ -49,6 +52,11 @@ function Actions.switchChest(entity, replacementName, requestFilters)
 		entity.destroy()
 		
 		local newChest = surface.create_entity{name=replacementName, position=position, force=force, request_filters=requestFilters}
+		
+		if storageFilter and newChest.prototype.logistic_mode == "storage" then
+			newChest.storage_filter = storageFilter
+		end
+		
 		for item, count in pairs(chestContents) do
 			local itemStack = {name=item, count=count}
 			
