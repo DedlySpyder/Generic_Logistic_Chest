@@ -35,14 +35,18 @@ end
 
 function Migrations.to_0_3_0()
 	global.playerUiOpen = global.genericChestPlayerData
-	global.chestData = Util.Table.map(global.chestData or {}, function(data)
-		local storageFilter = nil
-		if data.ghost.ghost_prototype.logistic_mode == "storage" then
-			storageFilter = data.ghost.storage_filter
+	global.chestData = Util.Table.map(global.genericChestChestData or {}, function(data)
+		local ghost = data.ghost
+		if ghost and ghost.valid then
+			local storageFilter = nil
+			if ghost.ghost_prototype.logistic_mode == "storage" then
+				storageFilter = ghost.storage_filter
+			end
+			
+			return {ghost=ghost, replacementChestName=data.replacementChestName, requestFilters=data.request_filters, storageFilter=storageFilter}
 		end
-		
-		return {ghost=data.ghost, replacementChestName=data.replacementChestName, requestFilters=data.request_filters, storageFilter=storageFilter}
 	end)
 	
 	Storage.init()
+	Storage.ChestData.purge()
 end

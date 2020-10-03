@@ -5,8 +5,6 @@ require("scripts.storage")
 require("scripts.ui")
 require("scripts.util")
 
---TODO - future? - copy and paste the generic settings?
-
 
 local GENERIC_CHEST_MAPPING = ChestGroups.getGenericToReplacementMapping()
 

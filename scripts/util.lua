@@ -64,7 +64,10 @@ function Util.Table.map(tbl, func)
 	local isArr = #tbl > 0
 	for k, v in pairs(tbl) do
 		if isArr then
-			table.insert(newTable, func(v))
+			local newValue = func(v)
+			if newValue then
+				table.insert(newTable, newValue)
+			end
 		else
 			newTable[k] = func(v)
 		end

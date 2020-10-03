@@ -2,15 +2,10 @@ require("util")
 
 Storage = {}
 
-function Storage.init() -- TODO - call this and migrate
+function Storage.init()
 	global.playerUiOpen = global.playerUiOpen or {} -- array of {player=LuaPlayer, chest=LuaEntity}
 	global.chestData = global.chestData or {} -- array of {ghost=LuaEntity, replacementChestName=String, requestFilters=Table of request slots, storageFilter=LuaItemPrototype}
 end
---[[
-global.genericChestPlayerData reanmed to global.playerUiOpen
-global.genericChestChestData reanmed to global.chestData
-	- {ghost=LuaEntity, position=Position, replacementChestName=String, request_filters=nil} to >> {ghost=[same], replacementChestName=[same], requestFilters=[same as request_filters], storageFilter=LuaItemPrototype}
-]]--
 
 
 
