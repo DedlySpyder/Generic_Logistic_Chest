@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 04. 10. 2020
+  Info:
+    - Upgraded to Factorio 1.0
+    - Mod rewrite to more easily add logistic containers from other mods
+    - Compatibility for Warehousing mod's storehouses and warehouses
+  Features:
+    - Added settings for debug mode and for chest data cleanup (in case of ghosts timing out)
+  Changes:
+    - Sprites have been changed to be the storage chest of a logistic container group with a new orange generic symbol on top of it
+    - Sprites of generic versions of logistic chests now have a green generic symbol on the bottom left of the sprite
+    - Generic chests should now properly transfer any items to it's replacement
+    - Storage chest filters will now properly be set on generic chests created from blueprints
+    - Renamed all internal prototypes to add a mod specific prefix
+---------------------------------------------------------------------------------------------------
 Version: 0.2.8
 Date: 02. 02. 2020
   Features:

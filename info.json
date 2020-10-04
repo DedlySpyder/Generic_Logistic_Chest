@@ -7,8 +7,8 @@
   "homepage": "",
   "description": "Allows the player to make a special chest that can be turned into any of the base game logistic chests.",
   "dependencies" : [
-	"base >= 0.18",
+	"base >= 1.0",
 	"? Warehousing >= 0.3.0"
   ],
-  "factorio_version": "0.18"
+  "factorio_version": "1.0"
 }
