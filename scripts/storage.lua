@@ -24,9 +24,10 @@ end
 
 -- Only returns the LuaEntity fopr that chest
 function Storage.PlayerUiOpen.get(player)
-	local data = Util.Table.filter(global.playerUiOpen, function(data) return data.player == player end)
-	if #data > 0 then
-		return data[1].chest
+	for _, data in ipairs(global.playerUiOpen) do
+		if data.player == player then
+			return data.chest
+		end
 	end
 end
 
