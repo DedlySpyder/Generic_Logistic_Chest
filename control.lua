@@ -24,10 +24,8 @@ function on_entity_placed(event)
 	-- If it is a generic chest, draw GUI and add it and the player match to the table
 	local replacements = GENERIC_CHEST_MAPPING[entity.name]
 	if replacements then
-		local drawn = UI.Selection.draw(player, replacements)
-		if drawn then
-			Storage.PlayerUiOpen.add(player, entity)
-		end
+		Storage.PlayerUiOpen.add(player, entity)
+		UI.Selection.draw(player, replacements)
 	end
 	
 	-- Check for a ghost (from blueprints)
@@ -38,6 +36,31 @@ end
 
 script.on_event(defines.events.on_built_entity, on_entity_placed)
 
+function on_entity_destroyed(event)
+	local entity = event.entity
+	
+	-- If a generic chest is destroyed, check if a player was trying to change it
+	local replacements = GENERIC_CHEST_MAPPING[entity.name]
+	if replacements then
+		local player = Storage.PlayerUiOpen.removeChest(entity)
+		if player then
+			UI.Selection.destroy(player)
+		end
+	end
+end
+
+function build_script_raised_filters()
+	local filters = {}
+	for generic, _ in pairs(GENERIC_CHEST_MAPPING) do
+		table.insert(filters, {filter="name", name=generic})
+	end
+	return filters
+end
+
+script.on_event(defines.events.on_pre_player_mined_item, on_entity_destroyed)
+script.on_event(defines.events.on_robot_pre_mined, on_entity_destroyed)
+script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, build_script_raised_filters())
+script.on_event(defines.events.on_entity_died, on_entity_destroyed)
 
 function on_robot_built_entity(event)
 	local entity = event.created_entity
@@ -74,9 +97,16 @@ function on_gui_click(event)
 			if buttonSubString == UI.Selection.BUTTON_PREFIX_DIFF then
 				local replacementName = string.sub(elementName, #UI.Selection.BUTTON_PREFIX + 1, #elementName)
 				
-				local playerChest = Storage.PlayerUiOpen.get(player)
-				if not Actions.switchChest(playerChest, replacementName) then
-					player.print({"Generic_Logistic_select_error_chest_not_valid"})
+				local playerChests = Storage.PlayerUiOpen.get(player)
+				local failedCount = 0
+				for _, playerChest in ipairs(playerChests) do
+					if not Actions.switchChest(playerChest, replacementName) then
+						failedCount = failedCount + 1
+					end
+				end
+				
+				if failedCount > 0 then
+					player.print({"Generic_Logistic_select_error_chest_not_valid", tostring(failedCount)})
 				end
 				
 				UI.Selection.destroy(player)

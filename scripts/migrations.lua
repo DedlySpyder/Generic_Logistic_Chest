@@ -11,6 +11,9 @@ function Migrations.handle(data)
 			if Migrations.versionCompare(oldVersion, "0.3.0") then
 				Migrations.to_0_3_0()
 			end
+			if Migrations.versionCompare(oldVersion, "0.4.0") then
+				Migrations.to_0_4_0()
+			end
 		end
 	end
 end
@@ -49,4 +52,15 @@ function Migrations.to_0_3_0()
 	
 	Storage.init()
 	Storage.ChestData.purge()
+end
+
+function Migrations.to_0_4_0()
+	local newTable = {}
+	for _, data in ipairs(global.playerUiOpen) do
+		local player = data.player
+		if player and player.valid then
+			newTable[player.index] = {data.chest}
+		end
+	end
+	global.playerUiOpen = newTable
 end

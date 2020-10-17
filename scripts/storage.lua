@@ -7,28 +7,53 @@ function Storage.init()
 	global.chestData = global.chestData or {} -- array of {ghost=LuaEntity, replacementChestName=String, requestFilters=Table of request slots, storageFilter=LuaItemPrototype}
 end
 
-
-
 Storage.PlayerUiOpen = {}
 function Storage.PlayerUiOpen.add(player, entity)
-	Storage.PlayerUiOpen.remove(player)
-	
-	Util.debugLog("Adding " .. entity.name .. " to " .. player.name .. "'s data")
-	table.insert(global.playerUiOpen, {player=player, chest=entity})
+	if entity and entity.valid then
+		Util.debugLog("Adding " .. entity.name .. " to " .. player.name .. "'s data")
+		local chests = global.playerUiOpen[player.index] or {}
+		
+		if #chests == 0 or (chests[1] and chests[1].valid and chests[1].name == entity.name) then
+			table.insert(chests, entity)
+		else
+			player.print({"Generic_Logistic_placed_warn_mismatched_chest"})
+		end
+		global.playerUiOpen[player.index] = chests
+	end
 end
 
 function Storage.PlayerUiOpen.remove(player)
 	Util.debugLog("Removing player data for  " .. player.name)
-	global.playerUiOpen = Util.Table.filter(global.playerUiOpen, function(data) return data.player ~= player end)
+	global.playerUiOpen[player.index] = nil
 end
 
--- Only returns the LuaEntity fopr that chest
-function Storage.PlayerUiOpen.get(player)
-	for _, data in ipairs(global.playerUiOpen) do
-		if data.player == player then
-			return data.chest
+-- Removes the entity from the first player (as only one should have it linked to them) and compacts the array
+-- Returns the matching LuaPLayer if they do not have any chests left
+function Storage.PlayerUiOpen.removeChest(entity)
+	for playerIndex, chests in pairs(global.playerUiOpen) do
+		local forwardMovement = 0
+		
+		for i, chest in ipairs(chests) do
+			if chest == entity then
+				chests[i - forwardMovement] = nil
+				forwardMovement = forwardMovement + 1
+			else
+				chests[i - forwardMovement] = chest
+				if forwardMovement > 0 then
+					chests[i] = nil
+				end
+			end
+		end
+		
+		if forwardMovement > 0 and #chests == 0 then
+			return game.players[playerIndex]
 		end
 	end
+end
+
+-- Only returns the LuaEntity chest(s) for that player
+function Storage.PlayerUiOpen.get(player)
+	return global.playerUiOpen[player.index]
 end
 
 
