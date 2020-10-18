@@ -2,6 +2,7 @@ require("chest_groups")
 require("storage")
 require("util")
 
+local GENERIC_CHEST_MAPPING = ChestGroups.getGenericToReplacementMapping()
 local REPLACEMENT_CHEST_MAPPING = ChestGroups.getReplacementToGenericMapping()
 
 Actions = {}
@@ -16,13 +17,13 @@ function Actions.switchGhost(ghostEntity)
 		local position = ghostEntity.position
 		local force = ghostEntity.force
 		
+		-- Save logistic filter data for when the replacement is built
 		local storageFilter = nil
 		if ghostEntity.ghost_prototype.logistic_mode == "storage" then
 			storageFilter = ghostEntity.storage_filter
 		end
 		
 		local requestFilters = {}
-		
 		for index=1, ghostEntity.request_slot_count do
 			local itemStack = ghostEntity.get_request_slot(index)
 			if itemStack then
@@ -30,10 +31,18 @@ function Actions.switchGhost(ghostEntity)
 			end
 		end
 		
+		-- Save the circuit connections for the new ghost
+		local connectionDefinitions = ghostEntity.circuit_connection_definitions
+		
 		-- Destroy the old ghost and create a new one
 		ghostEntity.destroy()
 		
-		local newGhost = surface.create_entity{name="entity-ghost", inner_name=genericChestName, position=position, force=force}
+		local newGhost = surface.create_entity{name="entity-ghost", inner_name=genericChestName, position=position, force=force, fast_replace=true}
+		
+		for _, connectionDefinition in pairs(connectionDefinitions) do
+			newGhost.connect_neighbour(connectionDefinition)
+		end
+		
 		Storage.ChestData.add(newGhost, oldGhostName, requestFilters, storageFilter)
 	end
 end
@@ -44,22 +53,40 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 		local surface = entity.surface
 		local position = entity.position
 		local force = entity.force
-		
 		Util.debugLog("Switching chest " .. entity.name .. " at (" .. position.x .. "," .. position.y .. ") on " .. surface.name .. " with " .. replacementName)
 		
-		-- Save the contents before destorying the chest
+		-- Fast replace can handle moving items and spilling excess, but it will also spill the generic chest, and does so last, so finding it could be hard to judge
 		local tempChest = surface.create_entity{name=Util.MOD_PREFIX .. "temp", position=position, force=force}
 		Actions.swapInventories(entity, tempChest)
-		entity.destroy()
 		
-		local newChest = surface.create_entity{name=replacementName, position=position, force=force, request_filters=requestFilters}
-		
-		if storageFilter and newChest.prototype.logistic_mode == "storage" then
-			newChest.storage_filter = storageFilter
+		local newChest
+		if surface.can_fast_replace{name=replacementName, position=position, force=force} then
+			newChest = surface.create_entity{
+				name=replacementName,
+				position=position,
+				force=force,
+				request_filters=requestFilters,
+				fast_replace=true,
+				spill=false,
+				create_build_effect_smoke=false
+			}
+		else
+			-- If fast replace doesn't work (maybe a mod chest doesn't have fast replace available?) then manually do what I can
+			local connectionDefs = entity.circuit_connection_definitions
+			entity.destroy()
+			newChest = surface.create_entity{name=replacementName, position=position, force=force, request_filters=requestFilters}
+			
+			for _, def in ipairs(connectionDefs) do
+				newChest.connect_neighbour(def)
+			end
 		end
 		
 		Actions.swapInventories(tempChest, newChest)
 		tempChest.destroy()
+		
+		if storageFilter and newChest.prototype.logistic_mode == "storage" then
+			newChest.storage_filter = storageFilter
+		end
 		
 		return newChest
 	end
