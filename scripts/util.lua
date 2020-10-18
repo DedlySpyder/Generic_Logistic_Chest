@@ -4,12 +4,23 @@ Util.MOD_PREFIX = "Generic_Logistic_"
 
 Util.DEBUG_MODE = settings.startup["Generic_Logistic_debug_mode"].value
 
+Util._DEBUG_LOG_CACHE = {message="", count=0}
+
 if Util.DEBUG_MODE then
 	Util.debugLog = function(message)
 		if game then
+			local formattedMessage = "[" .. game.tick .. "] " .. message
+			if Util._DEBUG_LOG_CACHE.message == formattedMessage then
+				Util._DEBUG_LOG_CACHE.count = Util._DEBUG_LOG_CACHE.count + 1
+				formattedMessage = "[" .. game.tick .. "][" .. Util._DEBUG_LOG_CACHE.count .. "] " .. message
+			else
+				Util._DEBUG_LOG_CACHE.message = formattedMessage
+				Util._DEBUG_LOG_CACHE.count = 1
+			end
+			
 			for _, player in pairs(game.players) do
 				if player and player.valid then
-					player.print("[" .. game.tick .. "] " .. message)
+					player.print(formattedMessage)
 				end
 			end
 		else
@@ -74,4 +85,3 @@ function Util.Table.map(tbl, func)
 	end
 	return newTable
 end
-
