@@ -48,7 +48,8 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 		Util.debugLog("Switching chest " .. entity.name .. " at (" .. position.x .. "," .. position.y .. ") on " .. surface.name .. " with " .. replacementName)
 		
 		-- Save the contents before destorying the chest
-		local chestContents = entity.get_inventory(defines.inventory.chest).get_contents()
+		local tempChest = surface.create_entity{name=Util.MOD_PREFIX .. "temp", position=position, force=force}
+		Actions.swapInventories(entity, tempChest)
 		entity.destroy()
 		
 		local newChest = surface.create_entity{name=replacementName, position=position, force=force, request_filters=requestFilters}
@@ -57,21 +58,30 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 			newChest.storage_filter = storageFilter
 		end
 		
-		for item, count in pairs(chestContents) do
-			local itemStack = {name=item, count=count}
-			
-			-- Insert what can be inserted, and spill the rest on the ground
-			if newChest.can_insert(itemStack) then
-				local inserted = newChest.insert(itemStack)
-				if inserted < count then
-					itemStack.count = itemStack.count - inserted
-					newChest.surface.spill_item_stack(newChest.position, itemStack)
-				end
-			else
-				newChest.surface.spill_item_stack(newChest.position, itemStack)
-			end
-		end
+		Actions.swapInventories(tempChest, newChest)
+		tempChest.destroy()
 		
 		return newChest
+	end
+end
+
+function Actions.swapInventories(sourceChest, destinationChest)
+	local inventory = sourceChest.get_inventory(defines.inventory.chest)
+	local chestContents = {}
+	for i=1, #inventory do
+		chestContents[i] = inventory[i]
+	end
+	
+	for _, itemStack in pairs(chestContents) do
+		-- Insert what can be inserted, and spill the rest on the ground
+		if destinationChest.can_insert(itemStack) then
+			local inserted = destinationChest.insert(itemStack)
+			if inserted < itemStack.count then
+				itemStack.count = itemStack.count - inserted
+				destinationChest.surface.spill_item_stack(destinationChest.position, itemStack)
+			end
+		else
+			destinationChest.surface.spill_item_stack(destinationChest.position, itemStack)
+		end
 	end
 end

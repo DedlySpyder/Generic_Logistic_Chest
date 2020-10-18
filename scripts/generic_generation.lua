@@ -22,6 +22,7 @@ end
 function Generic_Logistic_Generator.generate()
 	Generic_Logistic_Generator._cache.cacheAllPrototypes()
 	
+	local largestSize = 0
 	local newPrototypes = {}
 	for name, data in pairs(Generic_Logistic_Generator._groups) do
 		Util.debugLog("Generating prototypes for generic group " .. name)
@@ -35,6 +36,11 @@ function Generic_Logistic_Generator.generate()
 		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
 		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients))
 		
+		local size = Generic_Logistic_Generator._cache.ENTITY_CACHE[genericEntityBase].inventory_size
+		if size > largestSize then
+			largestSize = size
+		end
+		
 		for _, replacement in ipairs(data.replacements) do
 			Util.debugLog("Generating replacement prototypes for " .. replacement)
 			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementItem(replacement))
@@ -45,10 +51,29 @@ function Generic_Logistic_Generator.generate()
 	end
 	data:extend(newPrototypes)
 	
+	Generic_Logistic_Generator.createTempChest(largestSize)
+	
 	Generic_Logistic_Generator._groups = {}
 	Generic_Logistic_Generator._cache.clear()
 end
 
+function Generic_Logistic_Generator.createTempChest(size)
+	Util.debugLog("Creating temp chest of size " .. size)
+	data:extend({{
+		type = "container",
+		name = Util.MOD_PREFIX .. "temp",
+		icon = "__Generic_Logistic_Chest__/graphics/generic_chest_icon.png",
+		icon_size = 64,
+		flags = {"not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+		collision_mask = {},
+		inventory_size = size,
+		picture =
+		{
+			filename = "__Generic_Logistic_Chest__/graphics/generic_chest_icon.png",
+			size = 64
+		}
+	}})
+end
 
 
 
