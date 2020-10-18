@@ -16,6 +16,10 @@ function Migrations.handle(data)
 			end
 		end
 	end
+	
+	if data.mod_changes or data.migration_applied then
+		Migrations.unlockGenericRecipes()
+	end
 end
 
 -- Returns true if oldVersion is older than newVersion
@@ -34,6 +38,31 @@ function Migrations.versionCompare(oldVersion, newVersion)
 	
 	if lt(oldPat, newPat) then return true end
 	return false
+end
+
+function Migrations.unlockGenericRecipes()
+	Util.debugLog("Unlocking generic recipes")
+	local generics = ChestGroups.getGenericToReplacementMapping()
+	local recipes = game.recipe_prototypes
+	for _, techPrototype in pairs(game.technology_prototypes) do
+		local effects = techPrototype.effects
+		if effects then
+			for _, modifier in ipairs(effects) do
+				local recipeName = modifier.recipe
+				if modifier.type == "unlock-recipe" and generics[recipeName] then
+					-- Found a tech that unlocks a generic recipe
+					-- Check each force and enable the recipe if it is researched
+					for _, force in pairs(game.forces) do
+						local recipe = force.recipes[recipeName]
+						local tech = force.technologies[techPrototype.name]
+						if tech and tech.researched and recipe then
+							recipe.enabled = true
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 function Migrations.to_0_3_0()

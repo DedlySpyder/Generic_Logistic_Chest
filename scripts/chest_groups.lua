@@ -2,6 +2,10 @@ require("util")
 
 ChestGroups = {}
 
+ChestGroups._cache = {}
+ChestGroups._cache.GENERIC_TO_REPLACEMENT = nil
+ChestGroups._cache.REPLACEMENT_TO_GENERIC = nil
+
 function ChestGroups.getGroups()
 	Util.debugLog("Looking up chest groups")
 	if mods then
@@ -24,23 +28,29 @@ function ChestGroups.getGroups()
 end
 
 function ChestGroups.getGenericToReplacementMapping()
-	local mapping = {}
-	for _, group in ipairs(ChestGroups.getGroups()) do
-		local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
-		mapping[Util.MOD_PREFIX .. group.name] = replacements
+	if not ChestGroups._cache.GENERIC_TO_REPLACEMENT then
+		local mapping = {}
+		for _, group in ipairs(ChestGroups.getGroups()) do
+			local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			mapping[Util.MOD_PREFIX .. group.name] = replacements
+		end
+		ChestGroups._cache.GENERIC_TO_REPLACEMENT = mapping
 	end
-	return mapping
+	return ChestGroups._cache.GENERIC_TO_REPLACEMENT
 end
 
 function ChestGroups.getReplacementToGenericMapping()
-	local genericMapping = ChestGroups.getGenericToReplacementMapping()
-	local mapping = {}
-	for generic, replacements in pairs(genericMapping) do
-		for _, replacement in ipairs(replacements) do
-			mapping[replacement] = generic
+	if not ChestGroups._cache.REPLACEMENT_TO_GENERIC then
+		local genericMapping = ChestGroups.getGenericToReplacementMapping()
+		local mapping = {}
+		for generic, replacements in pairs(genericMapping) do
+			for _, replacement in ipairs(replacements) do
+				mapping[replacement] = generic
+			end
 		end
+		ChestGroups._cache.REPLACEMENT_TO_GENERIC = mapping
 	end
-	return mapping
+	return ChestGroups._cache.REPLACEMENT_TO_GENERIC
 end
 
 ChestGroups._RAW = {

@@ -190,6 +190,7 @@ end
 
 function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityName, genericChestName, ingredients)
 	local recipe = table.deepcopy(Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName].name])
+	local tech = Generic_Logistic_Generator._cache.TECH_CACHE[recipe.name]
 	recipe.name = genericChestName
 	recipe.enabled = false
 	recipe.ingredients = ingredients
@@ -197,7 +198,7 @@ function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityNam
 	recipe.result = genericChestName
 	recipe.result_count = 1
 	
-	table.insert(data.raw["technology"]["logistic-system"].effects, {
+	table.insert(tech.effects, {
 		type = "unlock-recipe",
 		recipe = recipe.name
 	})
@@ -212,7 +213,9 @@ function Generic_Logistic_Generator._cache.clear()
 	Generic_Logistic_Generator._cache.ENTITY_CACHE = {} -- cached by name
 	Generic_Logistic_Generator._cache.ITEM_CACHE = {} -- cached by name
 	Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE = {} -- cached by place_result
+	Generic_Logistic_Generator._cache.RECIPE_CACHE = {} -- cached by name
 	Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE = {} -- cached by result
+	Generic_Logistic_Generator._cache.TECH_CACHE = {} -- cached by result
 end
 Generic_Logistic_Generator._cache.clear() -- Initialize the caches
 
@@ -231,6 +234,7 @@ function Generic_Logistic_Generator._cache.cacheAllPrototypes()
 	Generic_Logistic_Generator._cache.cacheEntities(entityNames)
 	Generic_Logistic_Generator._cache.cacheItems()
 	Generic_Logistic_Generator._cache.cacheRecipes()
+	Generic_Logistic_Generator._cache.cacheTechnologies()
 end
 
 
@@ -259,9 +263,21 @@ function Generic_Logistic_Generator._cache.cacheRecipes()
 		local result = recipe.result
 		if result and Generic_Logistic_Generator._cache.ITEM_CACHE[result] then
 			Util.debugLog("Caching recipe " .. recipe.name)
+			Generic_Logistic_Generator._cache.RECIPE_CACHE[recipe.name] = true
 			Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[result] = recipe
 		end
 	end
 end
 
 
+function Generic_Logistic_Generator._cache.cacheTechnologies()
+	for _, tech in pairs(data.raw["technology"]) do
+		if tech.effects then
+			for _, effect in ipairs(tech.effects) do
+				if effect.type == "unlock-recipe" and Generic_Logistic_Generator._cache.RECIPE_CACHE[effect.recipe] then
+					Generic_Logistic_Generator._cache.TECH_CACHE[effect.recipe] = tech
+				end
+			end
+		end
+	end
+end
