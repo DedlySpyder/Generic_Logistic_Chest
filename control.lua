@@ -6,8 +6,6 @@ require("scripts.ui")
 require("scripts.util")
 
 
-local GENERIC_CHEST_MAPPING = ChestGroups.getGenericToReplacementMapping()
-
 
 script.on_init(Storage.init)
 
@@ -22,7 +20,7 @@ function on_entity_placed(event)
 	local player = game.players[event.player_index]
 	
 	-- If it is a generic chest, draw GUI and add it and the player match to the table
-	local replacements = GENERIC_CHEST_MAPPING[entity.name]
+	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
 	if replacements then
 		Storage.PlayerUiOpen.add(player, entity)
 		UI.Selection.draw(player, replacements)
@@ -40,7 +38,7 @@ function on_entity_destroyed(event)
 	local entity = event.entity
 	
 	-- If a generic chest is destroyed, check if a player was trying to change it
-	local replacements = GENERIC_CHEST_MAPPING[entity.name]
+	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
 	if replacements then
 		local player = Storage.PlayerUiOpen.removeChest(entity)
 		if player then
@@ -51,7 +49,7 @@ end
 
 function build_script_raised_filters()
 	local filters = {}
-	for generic, _ in pairs(GENERIC_CHEST_MAPPING) do
+	for generic, _ in pairs(ChestGroups.getGenericToReplacementMapping()) do
 		table.insert(filters, {filter="name", name=generic})
 	end
 	return filters
@@ -65,7 +63,7 @@ script.on_event(defines.events.on_entity_died, on_entity_destroyed)
 function on_robot_built_entity(event)
 	local entity = event.created_entity
 	
-	local replacements = GENERIC_CHEST_MAPPING[entity.name]
+	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
 	if replacements then
 		local chestData = Storage.ChestData.get(entity)
 		if chestData then
@@ -78,10 +76,9 @@ end
 
 script.on_event(defines.events.on_robot_built_entity, on_robot_built_entity)
 
-
 function on_gui_click(event)
 	local elementName = event.element.name
-	Util.debugLog(elementName.." clicked")
+	Util.debugLog(elementName .. " clicked")
 	
 	-- Find the UI prefix (for this mod)
 	local modSubString = string.sub(elementName, 1, #Util.MOD_PREFIX)

@@ -2,14 +2,12 @@ require("chest_groups")
 require("storage")
 require("util")
 
-local GENERIC_CHEST_MAPPING = ChestGroups.getGenericToReplacementMapping()
-local REPLACEMENT_CHEST_MAPPING = ChestGroups.getReplacementToGenericMapping()
 
 Actions = {}
 
 function Actions.switchGhost(ghostEntity)
 	local oldGhostName = ghostEntity.ghost_name
-	local genericChestName = REPLACEMENT_CHEST_MAPPING[oldGhostName]
+	local genericChestName = ChestGroups.getGenericFromReplacement(oldGhostName)
 	if genericChestName then
 		Util.debugLog("Swapping ghost of " .. oldGhostName .. " to " .. genericChestName)
 		
