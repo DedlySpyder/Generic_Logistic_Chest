@@ -115,4 +115,48 @@ end
 
 script.on_event(defines.events.on_gui_click, on_gui_click)
 
+function on_player_copied(event)
+	local player = game.players[event.player_index]
+	local entity = player.selected
+	
+	if entity then
+		local entityName = entity.name
+		local nameMapping = ChestGroups.getFullGroupWithOriginals(entityName)
+		if nameMapping then
+			local sourceName = nameMapping[entityName]
+			Util.debugLog("Copying chest " .. entityName .. " as " .. sourceName .. " for " .. player.name)
+			Storage.PlayerCopyData.add(player, sourceName)
+		end
+	end
+end
+
+script.on_event("Generic_Logistic_copy_chest", on_player_copied)
+
+function on_player_pasted(event)
+	local player = game.players[event.player_index]
+	local target = player.selected
+	
+	if target then
+		local chestGroup = ChestGroups.getFullGroup(target.name)
+		if chestGroup then
+			local targetName = target.name
+			Util.debugLog("Target (" .. targetName .. ") of paste by " .. player.name .. " is a generic chest")
+			
+			local sourceName = Storage.PlayerCopyData.get(player)
+			if chestGroup[sourceName] then
+				if targetName == sourceName then
+					Util.debugLog("Source chest is the same as target chest, skipping paste")
+					return
+				end
+				
+				Util.debugLog("Pasting chest " .. sourceName .. " onto chest " .. target.name)
+				Actions.switchChest(target, sourceName)
+			end
+		end
+	end
+end
+
+script.on_event("Generic_Logistic_paste_chest", on_player_pasted)
+
+
 script.on_nth_tick(settings.global["Generic_Logistic_chest_data_purge_period"].value * 60 * 60, Storage.ChestData.purge)

@@ -3,9 +3,11 @@ require("util")
 Storage = {}
 
 function Storage.init()
-	global.playerUiOpen = global.playerUiOpen or {} -- array of {player=LuaPlayer, chest=LuaEntity}
-	global.chestData = global.chestData or {} -- array of {ghost=LuaEntity, replacementChestName=String, requestFilters=Table of request slots, storageFilter=LuaItemPrototype}
+	global.playerUiOpen = global.playerUiOpen or {} -- map or player index -> array of LuaEntity chests
+	global.chestData = global.chestData or {} -- map of Util generated key (surface, position, name) -> {ghost=LuaEntity, replacementChestName=String, requestFilters=Table of request slots, storageFilter=LuaItemPrototype}
+	global.playerChestData = global.playerChestData or {} -- map of player index -> name of the copied chest
 end
+
 
 Storage.PlayerUiOpen = {}
 function Storage.PlayerUiOpen.add(player, entity)
@@ -85,4 +87,20 @@ function Storage.ChestData.purge()
 			Storage.ChestData.removeByKey(key)
 		end
 	end
+end
+
+
+Storage.PlayerCopyData = {}
+function Storage.PlayerCopyData.add(player, chestName)
+	Util.debugLog("Adding " .. chestName .. " to " .. player.name .. "'s copy data")
+	global.playerChestData[player.index] = chestName
+end
+
+function Storage.PlayerCopyData.remove(player)
+	Util.debugLog("Removing player copy data for  " .. player.name)
+	global.playerChestData[player.index] = nil
+end
+
+function Storage.PlayerCopyData.get(player)
+	return global.playerChestData[player.index]
 end

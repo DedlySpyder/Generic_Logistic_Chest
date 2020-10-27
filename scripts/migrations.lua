@@ -92,4 +92,6 @@ function Migrations.to_0_4_0()
 		end
 	end
 	global.playerUiOpen = newTable
+	
+	Storage.init()
 end
