@@ -5,6 +5,23 @@ require("util")
 
 Actions = {}
 
+function Actions._getRequestFilters(entity)
+	local requestFilters = {}
+	for index=1, entity.request_slot_count do
+		local itemStack = entity.get_request_slot(index)
+		if itemStack then
+			table.insert(requestFilters, {index=index, name=itemStack.name, count=itemStack.count})
+		end
+	end
+	return requestFilters
+end
+
+function Actions._getStorageFilter(entity)
+	if entity.prototype.logistic_mode == "storage" or (entity.name == "entity-ghost" and entity.ghost_prototype and entity.ghost_prototype.logistic_mode == "storage") then
+		return entity.storage_filter
+	end
+end
+
 function Actions.switchGhost(ghostEntity)
 	local oldGhostName = ghostEntity.ghost_name
 	local genericChestName = ChestGroups.getGenericFromReplacement(oldGhostName)
@@ -16,18 +33,8 @@ function Actions.switchGhost(ghostEntity)
 		local force = ghostEntity.force
 		
 		-- Save logistic filter data for when the replacement is built
-		local storageFilter = nil
-		if ghostEntity.ghost_prototype.logistic_mode == "storage" then
-			storageFilter = ghostEntity.storage_filter
-		end
-		
-		local requestFilters = {}
-		for index=1, ghostEntity.request_slot_count do
-			local itemStack = ghostEntity.get_request_slot(index)
-			if itemStack then
-				table.insert(requestFilters, {index=index, name=itemStack.name, count=itemStack.count})
-			end
-		end
+		local storageFilter = Actions._getStorageFilter(ghostEntity)
+		local requestFilters = Actions._getRequestFilters(ghostEntity)
 		
 		-- Save the circuit connections for the new ghost
 		local connectionDefinitions = ghostEntity.circuit_connection_definitions
@@ -70,7 +77,10 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 			}
 		else
 			-- If fast replace doesn't work (maybe a mod chest doesn't have fast replace available?) then manually do what I can
+			requestFilters = requestFilters or Actions._getRequestFilters(entity)
+			storageFilter = storageFilter or Actions._getStorageFilter(entity)
 			local connectionDefs = entity.circuit_connection_definitions
+			
 			entity.destroy()
 			newChest = surface.create_entity{name=replacementName, position=position, force=force, request_filters=requestFilters}
 			
