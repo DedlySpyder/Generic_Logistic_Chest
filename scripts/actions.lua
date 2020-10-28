@@ -66,6 +66,7 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 		
 		local newChest
 		if surface.can_fast_replace{name=replacementName, position=position, force=force} then
+			Util.debugLog("Fast replacing chest")
 			newChest = surface.create_entity{
 				name=replacementName,
 				position=position,
@@ -75,7 +76,11 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 				spill=false,
 				create_build_effect_smoke=false
 			}
+			
+			-- The inventory is going to be manually transferred, so it can be spilled without duplicating the generic chest
+			newChest.get_inventory(defines.inventory.chest).clear()
 		else
+			Util.debugLog("Unable to fast replace chest, attempting to do it manually")
 			-- If fast replace doesn't work (maybe a mod chest doesn't have fast replace available?) then manually do what I can
 			requestFilters = requestFilters or Actions._getRequestFilters(entity)
 			storageFilter = storageFilter or Actions._getStorageFilter(entity)
