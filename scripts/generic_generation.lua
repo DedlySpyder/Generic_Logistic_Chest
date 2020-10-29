@@ -31,10 +31,14 @@ function Generic_Logistic_Generator.generate()
 		local localeName = data.localeName
 		local genericEntityBase = data.generic
 		
+		local baseEntities = table.deepcopy(data.replacements)
+		table.insert(baseEntities, genericEntityBase)
+		local tech = Generic_Logistic_Generator._internal.choseLatestTech(baseEntities)
+		
 		Util.debugLog("Generic chest name: " .. genericName)
 		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName))
 		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
-		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients))
+		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech))
 		
 		local size = Generic_Logistic_Generator._cache.ENTITY_CACHE[genericEntityBase].inventory_size
 		if size > largestSize then
@@ -173,6 +177,36 @@ function Generic_Logistic_Generator._internal.createReplacementEntity(entityName
 	return entity
 end
 
+function Generic_Logistic_Generator._internal.choseLatestTech(baseEntityNames)
+	local technologies = {}
+	for _, entityName in ipairs(baseEntityNames) do
+		local item = Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName]
+		local recipe = Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[item.name]
+		local tech = Generic_Logistic_Generator._cache.TECH_CACHE[recipe.name]
+		technologies[tech.name] = tech -- Distinct techs only
+	end
+	
+	local latestTech = nil
+	for _, tech in pairs(technologies) do
+		if latestTech and tech.prerequisites then
+			if latestTech.prerequisites then
+				for _, prereq in ipairs(tech.prerequisites) do
+					if prereq == latestTech.name then
+						latestTech = tech
+					end
+				end
+			else
+				-- If a tech doesn't have prerequisites, then it must be at the root of the tech tree anyways
+				latestTech = tech
+			end
+		else
+			latestTech = tech
+		end
+	end
+	
+	return latestTech
+end
+
 -- Generic Chest Generation
 function Generic_Logistic_Generator._internal.createGenericChestItem(entityName, genericChestName, localeName)
 	local item = table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
@@ -213,9 +247,9 @@ function Generic_Logistic_Generator._internal.createGenericChestEntity(entityNam
 	return entity
 end
 
-function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityName, genericChestName, ingredients)
+function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityName, genericChestName, ingredients, tech)
 	local recipe = table.deepcopy(Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName].name])
-	local tech = Generic_Logistic_Generator._cache.TECH_CACHE[recipe.name]
+	
 	recipe.name = genericChestName
 	recipe.enabled = false
 	recipe.ingredients = ingredients
