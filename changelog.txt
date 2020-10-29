@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.0
+Date: 28. 10. 2020
+  Features:
+    - Added copy/paste for generic chests, to convert generic/replacement chest (same controls as entity settings copy/paste)
+  Changes:
+    - Placing multiples of the same generic chest will now change all of them when making a selection from the UI
+    - Selection UI will now close if the chest(s) are removed/destroyed
+    - Moved other mod generic chests to their specific technologies instead of defaulting to the logistic-network technology
+  Bugfixes:
+    - Fixed generic recipes not being enabled if the technology was already researched before adding the mod
+    - Fixed complex items (like blueprints) only keeping a shallow copy when changing from a generic chest to a replacement
+    - Fixed circuit connections being removed by generic chest transformations (With the exception of https://forums.factorio.com/viewtopic.php?f=7&t=90515)
+---------------------------------------------------------------------------------------------------
 Version: 0.3.1
 Date: 05. 10. 2020
   Bugfixes:
