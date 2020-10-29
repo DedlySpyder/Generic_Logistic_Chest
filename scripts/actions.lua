@@ -107,21 +107,25 @@ end
 
 function Actions.swapInventories(sourceChest, destinationChest)
 	local inventory = sourceChest.get_inventory(defines.inventory.chest)
-	local chestContents = {}
-	for i=1, #inventory do
-		chestContents[i] = inventory[i]
-	end
 	
-	for _, itemStack in pairs(chestContents) do
-		-- Insert what can be inserted, and spill the rest on the ground
-		if destinationChest.can_insert(itemStack) then
-			local inserted = destinationChest.insert(itemStack)
-			if inserted < itemStack.count then
-				itemStack.count = itemStack.count - inserted
+	-- This is super heavy, and MOST of the time this is unneeded
+	if not inventory.is_empty() then
+		local chestContents = {}
+		for i=1, #inventory do
+			chestContents[i] = inventory[i]
+		end
+		
+		for _, itemStack in pairs(chestContents) do
+			-- Insert what can be inserted, and spill the rest on the ground
+			if destinationChest.can_insert(itemStack) then
+				local inserted = destinationChest.insert(itemStack)
+				if inserted < itemStack.count then
+					itemStack.count = itemStack.count - inserted
+					destinationChest.surface.spill_item_stack(destinationChest.position, itemStack)
+				end
+			else
 				destinationChest.surface.spill_item_stack(destinationChest.position, itemStack)
 			end
-		else
-			destinationChest.surface.spill_item_stack(destinationChest.position, itemStack)
 		end
 	end
 end
