@@ -22,43 +22,53 @@ end
 function Generic_Logistic_Generator.generate()
 	Generic_Logistic_Generator._cache.cacheAllPrototypes()
 	
-	local largestSize = 0
-	local newPrototypes = {}
 	for name, data in pairs(Generic_Logistic_Generator._groups) do
 		Util.debugLog("Generating prototypes for generic group " .. name)
-		
-		local genericName = Util.MOD_PREFIX .. name
-		local localeName = data.localeName
-		local genericEntityBase = data.generic
-		
-		local baseEntities = table.deepcopy(data.replacements)
-		table.insert(baseEntities, genericEntityBase)
-		local tech = Generic_Logistic_Generator._internal.choseLatestTech(baseEntities)
-		
-		Util.debugLog("Generic chest name: " .. genericName)
-		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName))
-		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
-		table.insert(newPrototypes, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech))
-		
-		local size = Generic_Logistic_Generator._cache.ENTITY_CACHE[genericEntityBase].inventory_size
-		if size > largestSize then
-			largestSize = size
+		local success, msg = pcall(Generic_Logistic_Generator.generateGroup, name, data)
+		if not success then
+			Util.dumpLogisticChests()
+			for _, chest in ipairs(data.replacements) do
+				if not Generic_Logistic_Generator._cache.ENTITY_CACHE[chest] then
+					error('Failed to generate generic logistic chest "' .. chest .. '" for mod "' .. data.mod .. '". Please report this error to the mod portal with the factorio-current.log')
+				end
+			end
+			error('Failed to generate generic logistic chest(s) for mod "' .. data.mod .. '". Please report this error to the mod portal with the factorio-current.log\n' .. msg)
 		end
-		
-		for _, replacement in ipairs(data.replacements) do
-			Util.debugLog("Generating replacement prototypes for " .. replacement)
-			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementItem(replacement))
-			table.insert(newPrototypes, Generic_Logistic_Generator._internal.createReplacementEntity(replacement, genericName))
-		end
-		
-		Generic_Logistic_Generator._internal.GROUP_COUNT = Generic_Logistic_Generator._internal.GROUP_COUNT + 1
 	end
-	data:extend(newPrototypes)
+	data:extend(Generic_Logistic_Generator._internal.NEW_PROTOTYPES)
 	
-	Generic_Logistic_Generator.createTempChest(largestSize)
+	Generic_Logistic_Generator.createTempChest(Generic_Logistic_Generator._internal.LARGEST_SIZE)
 	
 	Generic_Logistic_Generator._groups = {}
 	Generic_Logistic_Generator._cache.clear()
+end
+
+function Generic_Logistic_Generator.generateGroup(name, data)
+	local genericName = Util.MOD_PREFIX .. name
+	local localeName = data.localeName
+	local genericEntityBase = data.generic
+	
+	local baseEntities = table.deepcopy(data.replacements)
+	table.insert(baseEntities, genericEntityBase)
+	local tech = Generic_Logistic_Generator._internal.choseLatestTech(baseEntities)
+	
+	Util.debugLog("Generic chest name: " .. genericName)
+	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName))
+	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
+	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech))
+	
+	local size = Generic_Logistic_Generator._cache.ENTITY_CACHE[genericEntityBase].inventory_size
+	if size > Generic_Logistic_Generator._internal.LARGEST_SIZE then
+		Generic_Logistic_Generator._internal.LARGEST_SIZE = size
+	end
+	
+	for _, replacement in ipairs(data.replacements) do
+		Util.debugLog("Generating replacement prototypes for " .. replacement)
+		table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createReplacementItem(replacement))
+		table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createReplacementEntity(replacement, genericName))
+	end
+	
+	Generic_Logistic_Generator._internal.GROUP_COUNT = Generic_Logistic_Generator._internal.GROUP_COUNT + 1
 end
 
 function Generic_Logistic_Generator.createTempChest(size)
@@ -83,6 +93,8 @@ end
 
 Generic_Logistic_Generator._internal = {}
 Generic_Logistic_Generator._internal.GROUP_COUNT = 0
+Generic_Logistic_Generator._internal.LARGEST_SIZE = 0
+Generic_Logistic_Generator._internal.NEW_PROTOTYPES = {}
 
 function Generic_Logistic_Generator._internal.generifyIcons(item, isReplacement)
 	-- Move the icon spec back to icons if it doesn't already exist
