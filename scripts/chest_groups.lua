@@ -157,7 +157,7 @@ ChestGroups._RAW = {
 	{
 		mod = "base",
 		name = "logistic-chest",
-		localeName = "Generic_Logistic_logistic-chest",
+		localeName = "Generic_Logistic_base_logistic_chest",
 		generic = "logistic-chest-storage",
 		ingredients = {{"steel-chest", 1}, {"processing-unit", 2}},
 		replacements = {
@@ -171,7 +171,7 @@ ChestGroups._RAW = {
 	{
 		mod = "Warehousing",
 		name = "storehouse",
-		localeName = "Generic_Logistic_storehouse",
+		localeName = "Generic_Logistic_Warehousing_storehouse",
 		generic = "storehouse-storage",
 		ingredients = {{"storehouse-basic", 1}, {"Generic_Logistic_logistic-chest", 1}, {"iron-stick", 4}},
 		replacements = {
@@ -185,7 +185,7 @@ ChestGroups._RAW = {
 	{
 		mod = "Warehousing",
 		name = "warehouse",
-		localeName = "Generic_Logistic_warehouse",
+		localeName = "Generic_Logistic_Warehousing_warehouse",
 		generic = "warehouse-storage",
 		ingredients = {{"warehouse-basic", 1}, {"Generic_Logistic_logistic-chest", 1}, {"steel-plate", 10}, {"iron-stick", 15}},
 		replacements = {
@@ -195,8 +195,37 @@ ChestGroups._RAW = {
 			"warehouse-requester",
 			"warehouse-buffer"
 		}
+	},
+	{
+		mod = "boblogistics",
+		name = "logistic-chest-2",
+		localeName = "Generic_Logistic_boblogistic_logistic_chest_2",
+		generic = "logistic-chest-storage-2",
+		ingredients = {{"Generic_Logistic_logistic-chest", 1}, {"processing-unit", 1}},
+		replacements = {
+			"logistic-chest-passive-provider-2",
+			"logistic-chest-active-provider-2",
+			"logistic-chest-storage-2",
+			"logistic-chest-requester-2",
+			"logistic-chest-buffer-2"
+		}
+	},
+	{
+		mod = "boblogistics",
+		name = "logistic-chest-3",
+		localeName = "Generic_Logistic_boblogistic_logistic_chest_3",
+		generic = "logistic-chest-storage-3",
+		ingredients = {{"Generic_Logistic_logistic-chest-2", 1}, {"processing-unit", 1}},
+		replacements = {
+			"logistic-chest-passive-provider-3",
+			"logistic-chest-active-provider-3",
+			"logistic-chest-storage-3",
+			"logistic-chest-requester-3",
+			"logistic-chest-buffer-3"
+		}
 	}
 	--[[
+,
 	{
 		mod = "modName",
 		name = "chestName",

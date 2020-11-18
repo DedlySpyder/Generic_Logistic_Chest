@@ -136,7 +136,7 @@ function Generic_Logistic_Generator._internal.generifySprite(entity, newLayerFun
 	table.insert(sprite.layers, newLayerFunc(oldSpriteSize))
 	
 	if entity.animation then
-		local repeatCount = firstLayer.frame_count or firstLayer.repeat_count
+		local repeatCount = firstLayer.repeat_count or firstLayer.frame_count
 		sprite.layers[#sprite.layers].repeat_count = repeatCount
 		sprite.layers[#sprite.layers].hr_version.repeat_count = repeatCount
 		entity.animation = sprite

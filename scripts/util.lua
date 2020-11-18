@@ -56,6 +56,16 @@ function Util.mathMin(nums)
 	return math.min(unpack(t))
 end
 
+function Util.mathMax(nums)
+	local t = {}
+	for _, num in ipairs(nums) do
+		if num ~= nil then
+			table.insert(t, num)
+		end
+	end
+	return math.max(unpack(t))
+end
+
 function Util.getEntityDataKey(entity)
 	local name = entity.name
 	if name == "entity-ghost" then
