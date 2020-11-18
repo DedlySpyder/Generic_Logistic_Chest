@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 17. 11. 2020
+  Info:
+    - Compatibility for Bob's Logistics mod's logistic chests 2 and 3
+  Changes:
+    - Added error handling when generic chests cannot be created (along with an error message recommending to upload the factorio-current.log file)
+---------------------------------------------------------------------------------------------------
 Version: 0.4.0
 Date: 28. 10. 2020
   Features:
