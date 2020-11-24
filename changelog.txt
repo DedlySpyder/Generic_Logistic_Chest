@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.2
+Date: 23. 11. 2020
+  Features:
+    - Support for Factorio 1.1
+  Changes:
+    - Changed the base generic chests to be logistic chests instead of normal chests (this means they will show the logistic area when being placed)
+---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 17. 11. 2020
   Info:
