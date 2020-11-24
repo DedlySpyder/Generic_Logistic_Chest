@@ -144,8 +144,6 @@ function Generic_Logistic_Generator._internal.generifySprite(entity, newLayerFun
 		-- The sprite was a picture
 		entity.picture = sprite
 	end
-	
-	return sprite
 end
 
 -- Replacement Chest Generation
@@ -237,14 +235,13 @@ function Generic_Logistic_Generator._internal.createGenericChestEntity(entityNam
 	entity.localised_name = {"Generic_Logistic_generic_prefix", {localeName}}
 	entity.localised_description = {"Generic_Logistic_generic_logistic_chest_description", {localeName}}
 	entity.name = genericChestName
-	entity.type = "container"
 	entity.minable.result = genericChestName
 	
 	Generic_Logistic_Generator._internal.generifyIcons(entity)
 	
 	local normalSize = 512
 	local hrSize = 1024
-	entity.picture = Generic_Logistic_Generator._internal.generifySprite(entity, function(oldSpriteSize)
+	Generic_Logistic_Generator._internal.generifySprite(entity, function(oldSpriteSize)
 		return {
 			filename = "__Generic_Logistic_Chest__/graphics/generic_chest.png",
 			size = normalSize,
