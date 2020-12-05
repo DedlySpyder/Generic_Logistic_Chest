@@ -83,7 +83,7 @@ function on_robot_built_entity(event)
 		local chestData = Storage.ChestData.get(entity)
 		if chestData then
 			local storageKey = Util.getEntityDataKey(entity)
-			Actions.switchChest(entity, chestData.replacementChestName, chestData.requestFilters, chestData.storageFilter)
+			Actions.switchChest(entity, chestData.replacementChestName, nil, chestData.requestFilters, chestData.storageFilter)
 			Storage.ChestData.removeByKey(storageKey)
 		end
 	end
@@ -112,7 +112,7 @@ function on_gui_click(event)
 				local playerChests = Storage.PlayerUiOpen.get(player)
 				local failedCount = 0
 				for _, playerChest in ipairs(playerChests) do
-					if not Actions.switchChest(playerChest, replacementName) then
+					if not Actions.switchChest(playerChest, replacementName, player) then
 						failedCount = failedCount + 1
 					end
 				end
@@ -188,7 +188,7 @@ function on_player_pasted(event)
 				end
 				
 				Util.debugLog("Pasting chest " .. sourceName .. " onto chest " .. target.name)
-				Actions.switchChest(target, sourceName)
+				Actions.switchChest(target, sourceName, player)
 			end
 		end
 	end

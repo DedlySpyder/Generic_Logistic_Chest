@@ -49,11 +49,13 @@ function Actions.switchGhost(ghostEntity)
 		end
 		
 		Storage.ChestData.add(newGhost, oldGhostName, requestFilters, storageFilter)
+		return true
 	end
+	return false
 end
 
 -- Returns the new entity
-function Actions.switchChest(entity, replacementName, requestFilters, storageFilter)
+function Actions.switchChest(entity, replacementName, player, requestFilters, storageFilter)
 	if entity and entity.valid then
 		local surface = entity.surface
 		local position = entity.position
@@ -71,6 +73,7 @@ function Actions.switchChest(entity, replacementName, requestFilters, storageFil
 				name=replacementName,
 				position=position,
 				force=force,
+				player=player,
 				request_filters=requestFilters,
 				fast_replace=true,
 				spill=false,
