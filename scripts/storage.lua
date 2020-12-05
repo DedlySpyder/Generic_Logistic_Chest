@@ -6,6 +6,7 @@ function Storage.init()
 	global.playerUiOpen = global.playerUiOpen or {} -- map or player index -> array of LuaEntity chests
 	global.chestData = global.chestData or {} -- map of Util generated key (surface, position, name) -> {ghost=LuaEntity, replacementChestName=String, requestFilters=Table of request slots, storageFilter=LuaItemPrototype}
 	global.playerChestData = global.playerChestData or {} -- map of player index -> name of the copied chest
+	global.playerSelection = global.playerSelection or {} -- map of player index -> name of the selected chest
 end
 
 
@@ -103,4 +104,18 @@ end
 
 function Storage.PlayerCopyData.get(player)
 	return global.playerChestData[player.index]
+end
+
+
+Storage.PlayerSelection = {}
+function Storage.PlayerSelection.add(player, chestName)
+	global.playerSelection[player.index] = chestName
+end
+
+function Storage.PlayerSelection.remove(player)
+	global.playerSelection[player.index] = nil
+end
+
+function Storage.PlayerSelection.get(player)
+	return global.playerSelection[player.index]
 end

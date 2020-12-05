@@ -17,17 +17,32 @@ script.on_configuration_changed(Migrations.handle)
 
 function on_entity_placed(event)
 	local entity = event.created_entity
+	local entityName = entity.name
 	local player = game.players[event.player_index]
 	
 	-- If it is a generic chest, draw GUI and add it and the player match to the table
-	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
+	local replacements = ChestGroups.getReplacementsFromGeneric(entityName)
 	if replacements then
 		Storage.PlayerUiOpen.add(player, entity)
 		UI.Selection.draw(player, replacements)
 	end
 	
+	-- If the player just placed a replacement chest, and their cursor is empty, try to fill it with generics from their inventory
+	local generic = ChestGroups.getGenericFromReplacement(entityName)
+	if generic and Util.Player.isCursorEmpty(player) then
+		local selection = Storage.PlayerSelection.get(player)
+		if selection then
+			local chestStack = player.get_main_inventory().find_item_stack(generic)
+			if chestStack then
+				Util.debugLog("Refilling cursor for " .. player.name .. " with " .. selection)
+				chestStack.set_stack({name = selection, count = chestStack.count})
+				player.cursor_stack.swap_stack(chestStack)
+			end
+		end
+	end
+	
 	-- Check for a ghost (from blueprints)
-	if entity.name == "entity-ghost" then
+	if entityName == "entity-ghost" then
 		Actions.switchGhost(entity)
 	end
 end
@@ -115,6 +130,27 @@ end
 
 script.on_event(defines.events.on_gui_click, on_gui_click)
 
+function on_player_cursor_stack_changed(event)
+	local player = game.players[event.player_index]
+	if Util.Player.isCursorEmpty(player) then
+		local selection = Storage.PlayerSelection.get(player)
+		if selection then
+			local chestStack = player.get_main_inventory().find_item_stack(selection)
+			if chestStack then
+				local chestStackName = chestStack.name
+				local generic = ChestGroups.getGenericFromReplacement(chestStackName)
+				if generic then
+					Util.debugLog("Resetting " .. chestStackName .. " to " .. generic .. " for " .. player.name)
+					chestStack.set_stack({name = generic, count = chestStack.count})
+					Storage.PlayerSelection.remove(player)
+				end
+			end
+		end
+	end
+end
+
+script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_stack_changed)
+
 function on_player_copied(event)
 	local player = game.players[event.player_index]
 	local entity = player.selected
@@ -157,6 +193,49 @@ function on_player_pasted(event)
 end
 
 script.on_event("Generic_Logistic_paste_chest", on_player_pasted)
+
+function build_on_select_scroll(scrollDistance)
+	return function(event)
+		local player = game.players[event.player_index]
+		local cursorStack = player.cursor_stack
+		if cursorStack and cursorStack.valid and cursorStack.valid_for_read then
+			local cursorChestName = cursorStack.name
+			local chestGroup = ChestGroups.getFullGroupList(cursorChestName)
+			if chestGroup then
+				local groupCount = #chestGroup
+				local position = 0
+				
+				for i = 1, groupCount do
+					if chestGroup[i] == cursorChestName then
+						position = i
+						break
+					end
+				end
+				
+				if position > 0 then
+					local newPosition = position + scrollDistance
+					
+					-- Loop around the group
+					if newPosition < 1 then
+						newPosition = groupCount
+					elseif newPosition > groupCount then
+						newPosition = 1
+					end
+					
+					local newChestName = chestGroup[newPosition]
+					Util.debugLog("Scrolling chest from " .. cursorChestName .. " to " .. newChestName .. " for " .. player.name)
+					cursorStack.set_stack({name = newChestName, count = cursorStack.count})
+					Storage.PlayerSelection.add(player, newChestName)
+				else
+					Util.debugLog("ERROR: Did not find chest " .. cursorChestName .. " in chestGroup " .. serpent.line(chestGroup))
+				end
+			end
+		end
+	end
+end
+
+script.on_event("Generic_Logistic_select_scroll_up", build_on_select_scroll(1))
+script.on_event("Generic_Logistic_select_scroll_down", build_on_select_scroll(-1))
 
 
 script.on_nth_tick(settings.global["Generic_Logistic_chest_data_purge_period"].value * 60 * 60, Storage.ChestData.purge)

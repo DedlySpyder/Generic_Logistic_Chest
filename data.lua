@@ -20,5 +20,18 @@ data:extend({
 		name = "Generic_Logistic_paste_chest",
 		linked_game_control = "paste-entity-settings",
 		key_sequence = ""
+	},
+	
+	{
+		type = "custom-input",
+		name = "Generic_Logistic_select_scroll_up",
+		key_sequence = "ALT + mouse-wheel-up",
+		order = "100"
+	},
+	{
+		type = "custom-input",
+		name = "Generic_Logistic_select_scroll_down",
+		key_sequence = "ALT + mouse-wheel-down",
+		order = "200"
 	}
 })

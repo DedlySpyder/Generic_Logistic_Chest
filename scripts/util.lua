@@ -76,6 +76,12 @@ function Util.getEntityDataKey(entity)
 end
 
 
+Util.Player = {}
+function Util.Player.isCursorEmpty(player)
+	return not player.cursor_stack or not player.cursor_stack.valid_for_read
+end
+
+
 Util.Table = {}
 
 -- Filter either a table or an array, if the function returns true then the value will stay

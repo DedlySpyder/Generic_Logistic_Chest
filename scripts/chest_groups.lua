@@ -6,6 +6,7 @@ ChestGroups._cache = {}
 ChestGroups._cache.GENERIC_TO_REPLACEMENT = nil
 ChestGroups._cache.REPLACEMENT_TO_GENERIC = nil
 ChestGroups._cache.FULL_GROUPING = nil
+ChestGroups._cache.FULL_GROUPING_LIST = nil
 ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS = nil
 
 -- Returns the chest group and whether it should be cached or not
@@ -71,7 +72,7 @@ function ChestGroups.getReplacementToGenericMapping()
 	return ChestGroups._cache.REPLACEMENT_TO_GENERIC
 end
 
--- Returns a map of chest -> chest group
+-- Returns a map of chest -> chest group (map of name -> true)
 function ChestGroups.getFullGroupsMapping()
 	if not ChestGroups._cache.FULL_GROUPING then
 		Util.debugLog("No cache found for full groups mapping, generating now")
@@ -91,11 +92,38 @@ function ChestGroups.getFullGroupsMapping()
 		
 		if not cache then
 			Util.debugLog("Skipping cache setting")
-			return mapping
+			return mapping, false
 		end
 		ChestGroups._cache.FULL_GROUPING = mapping
 	end
-	return ChestGroups._cache.FULL_GROUPING
+	return ChestGroups._cache.FULL_GROUPING, true
+end
+
+-- Returns a map of chest -> chest group (list of chests)
+function ChestGroups.getFullGroupsListMapping()
+	if not ChestGroups._cache.FULL_GROUPING_LIST then
+		Util.debugLog("No cache found for full groups list mapping, generating now")
+		local rawChestGroups, cache = ChestGroups.getGroups()
+		local mapping = {}
+		for _, group in ipairs(rawChestGroups) do
+			local finalGroup = {Util.MOD_PREFIX .. group.name}
+			local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			for _, replacement in ipairs(replacements) do
+				table.insert(finalGroup, replacement)
+			end
+			
+			for _, chest in pairs(finalGroup) do
+				mapping[chest] = finalGroup
+			end
+		end
+		
+		if not cache then
+			Util.debugLog("Skipping cache setting")
+			return mapping, false
+		end
+		ChestGroups._cache.FULL_GROUPING_LIST = mapping
+	end
+	return ChestGroups._cache.FULL_GROUPING_LIST
 end
 
 -- Returns a map of chest -> {map of chest names (including originals) -> generic chest name version}
@@ -144,6 +172,10 @@ end
 
 function ChestGroups.getFullGroup(name)
 	return ChestGroups.getFullGroupsMapping()[name]
+end
+
+function ChestGroups.getFullGroupList(name)
+	return ChestGroups.getFullGroupsListMapping()[name]
 end
 
 function ChestGroups.getFullGroupWithOriginals(name)

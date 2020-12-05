@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.3
+Date: 04. 12. 2020
+  Features:
+    - Added new hotkeys to scroll between generic chests and it's replacements while holding it in the cursor (defaults to ALT + mouse scroll up/down)
+---------------------------------------------------------------------------------------------------
 Version: 0.4.2
 Date: 23. 11. 2020
   Features:
