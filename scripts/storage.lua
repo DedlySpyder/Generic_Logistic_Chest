@@ -34,21 +34,11 @@ end
 -- Returns the matching LuaPLayer if they do not have any chests left
 function Storage.PlayerUiOpen.removeChest(entity)
 	for playerIndex, chests in pairs(global.playerUiOpen) do
-		local forwardMovement = 0
+		local oldLength = #chests
+		local newChests = Util.Table.filter(chests, function(chest) return chest ~= entity end)
+		global.playerUiOpen[playerIndex] = newChests
 		
-		for i, chest in ipairs(chests) do
-			if chest == entity then
-				chests[i - forwardMovement] = nil
-				forwardMovement = forwardMovement + 1
-			else
-				chests[i - forwardMovement] = chest
-				if forwardMovement > 0 then
-					chests[i] = nil
-				end
-			end
-		end
-		
-		if forwardMovement > 0 and #chests == 0 then
+		if #newChests == 0 and oldLength > 0 then
 			return game.players[playerIndex]
 		end
 	end
