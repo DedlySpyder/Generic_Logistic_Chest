@@ -22,6 +22,7 @@ function Actions._getStorageFilter(entity)
 	end
 end
 
+-- Returns true if the ghost was switched
 function Actions.switchGhost(ghostEntity)
 	local oldGhostName = ghostEntity.ghost_name
 	local genericChestName = ChestGroups.getGenericFromReplacement(oldGhostName)
