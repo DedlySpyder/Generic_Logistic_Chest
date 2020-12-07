@@ -162,6 +162,8 @@ function on_player_copied(event)
 			local sourceName = nameMapping[entityName]
 			Util.debugLog("Copying chest " .. entityName .. " as " .. sourceName .. " for " .. player.name)
 			Storage.PlayerCopyData.add(player, sourceName)
+		else
+			Storage.PlayerCopyData.remove(player)
 		end
 	end
 end
@@ -170,7 +172,7 @@ script.on_event("Generic_Logistic_copy_chest", on_player_copied)
 
 function on_player_pasted(event)
 	local player = game.players[event.player_index]
-	local target = player.selected
+	local target = event.destination
 	
 	if target then
 		local chestGroup = ChestGroups.getFullGroup(target.name)
@@ -192,7 +194,7 @@ function on_player_pasted(event)
 	end
 end
 
-script.on_event("Generic_Logistic_paste_chest", on_player_pasted)
+script.on_event(defines.events.on_pre_entity_settings_pasted, on_player_pasted)
 
 function build_on_select_scroll(scrollDistance)
 	return function(event)

@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.4
+Date: 07. 12. 2020
+  Bugfixes:
+    - Fixed copy/paste logic to clear the chest copy settings when copying a non-chest entity
+---------------------------------------------------------------------------------------------------
 Version: 0.4.3
 Date: 04. 12. 2020
   Features:

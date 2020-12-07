@@ -15,12 +15,6 @@ data:extend({
 		linked_game_control = "copy-entity-settings",
 		key_sequence = ""
 	},
-	{
-		type = "custom-input",
-		name = "Generic_Logistic_paste_chest",
-		linked_game_control = "paste-entity-settings",
-		key_sequence = ""
-	},
 	
 	{
 		type = "custom-input",
