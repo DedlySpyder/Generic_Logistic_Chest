@@ -51,9 +51,9 @@ end
 
 
 Storage.ChestData = {}
-function Storage.ChestData.add(ghostEntity, replacementChestName, requestFilters, storageFilter)
+function Storage.ChestData.add(ghostEntity, replacementChestName, requestFilters, storageFilter, requestFromBufferToggle)
 	local key = Util.getEntityDataKey(ghostEntity)
-	global.chestData[key] = {ghost=ghostEntity, replacementChestName=replacementChestName, requestFilters=requestFilters, storageFilter=storageFilter}
+	global.chestData[key] = {ghost=ghostEntity, replacementChestName=replacementChestName, requestFilters=requestFilters, storageFilter=storageFilter, requestFromBufferToggle=requestFromBufferToggle}
 end
 
 function Storage.ChestData.remove(entity)

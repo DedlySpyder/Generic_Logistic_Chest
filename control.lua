@@ -97,7 +97,7 @@ function on_robot_built_entity(event)
 		local chestData = Storage.ChestData.get(entity)
 		if chestData then
 			local storageKey = Util.getEntityDataKey(entity)
-			Actions.switchChest(entity, chestData.replacementChestName, nil, chestData.requestFilters, chestData.storageFilter)
+			Actions.switchChestFromChestData(entity, chestData)
 			Storage.ChestData.removeByKey(storageKey)
 		end
 	end

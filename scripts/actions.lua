@@ -22,6 +22,12 @@ function Actions._getStorageFilter(entity)
 	end
 end
 
+function Actions._getRequestFromBuffers(entity)
+	if entity.prototype.logistic_mode == "requester" or (entity.name == "entity-ghost" and entity.ghost_prototype and entity.ghost_prototype.logistic_mode == "requester") then
+		return entity.request_from_buffers
+	end
+end
+
 -- Returns true if the ghost was switched
 function Actions.switchGhost(ghostEntity)
 	local oldGhostName = ghostEntity.ghost_name
@@ -34,8 +40,9 @@ function Actions.switchGhost(ghostEntity)
 		local force = ghostEntity.force
 		
 		-- Save logistic filter data for when the replacement is built
-		local storageFilter = Actions._getStorageFilter(ghostEntity)
 		local requestFilters = Actions._getRequestFilters(ghostEntity)
+		local storageFilter = Actions._getStorageFilter(ghostEntity)
+		local requestFromBufferToggle = Actions._getRequestFromBuffers(ghostEntity)
 		
 		-- Save the circuit connections for the new ghost
 		local connectionDefinitions = ghostEntity.circuit_connection_definitions
@@ -49,14 +56,18 @@ function Actions.switchGhost(ghostEntity)
 			newGhost.connect_neighbour(connectionDefinition)
 		end
 		
-		Storage.ChestData.add(newGhost, oldGhostName, requestFilters, storageFilter)
+		Storage.ChestData.add(newGhost, oldGhostName, requestFilters, storageFilter, requestFromBufferToggle)
 		return true
 	end
 	return false
 end
 
 -- Returns the new entity
-function Actions.switchChest(entity, replacementName, player, requestFilters, storageFilter)
+function Actions.switchChestFromChestData(entity, chestData)
+	return Actions.switchChest(entity, chestData.replacementChestName, nil, chestData.requestFilters, chestData.storageFilter, chestData.requestFromBufferToggle)
+end
+
+function Actions.switchChest(entity, replacementName, player, requestFilters, storageFilter, requestFromBufferToggle)
 	if entity and entity.valid then
 		local surface = entity.surface
 		local position = entity.position
@@ -88,6 +99,7 @@ function Actions.switchChest(entity, replacementName, player, requestFilters, st
 			-- If fast replace doesn't work (maybe a mod chest doesn't have fast replace available?) then manually do what I can
 			requestFilters = requestFilters or Actions._getRequestFilters(entity)
 			storageFilter = storageFilter or Actions._getStorageFilter(entity)
+			requestFromBufferToggle = requestFromBufferToggle or Actions._getRequestFromBuffers(entity)
 			local connectionDefs = entity.circuit_connection_definitions
 			
 			entity.destroy()
@@ -103,6 +115,10 @@ function Actions.switchChest(entity, replacementName, player, requestFilters, st
 		
 		if storageFilter and newChest.prototype.logistic_mode == "storage" then
 			newChest.storage_filter = storageFilter
+		end
+		
+		if requestFromBufferToggle and newChest.prototype.logistic_mode == "requester" then
+			newChest.request_from_buffers = requestFromBufferToggle
 		end
 		
 		return newChest
