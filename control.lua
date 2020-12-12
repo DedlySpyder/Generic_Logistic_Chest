@@ -29,8 +29,8 @@ function on_pre_entity_placed(event)
 					local replacementName = fullGroup[name]
 					Util.debugLog("Saving " .. replacementName .." entity on pre placed for " .. player.name)
 					Storage.PlayerFastReplace.add(player, replacementName, entity)
+					return
 				end
-				return
 			end
 		end
 	end
@@ -47,7 +47,7 @@ function on_entity_placed(event)
 	local replacements = ChestGroups.getReplacementsFromGeneric(entityName)
 	if replacements then
 		local fastReplaceChestData = Storage.PlayerFastReplace.get(player)
-		if fastReplaceChestData and fastReplaceChestData.replacementChestName  ~= entityName then
+		if fastReplaceChestData and fastReplaceChestData.replacementChestName ~= entityName then
 			Actions.switchChestFromChestData(entity, fastReplaceChestData, player)
 			Storage.PlayerFastReplace.remove(player)
 		else
