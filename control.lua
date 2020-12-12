@@ -15,6 +15,29 @@ script.on_configuration_changed(Migrations.handle)
 
 -- ~~ Events ~~ --
 
+function on_pre_entity_placed(event)
+	local player = game.players[event.player_index]
+	
+	-- Shift building is covered by upgrading events
+	if not event.shift_build then
+		local entities = player.surface.find_entities_filtered{position=event.position, force=force}
+		if #entities > 0 then
+			for _, entity in ipairs(entities) do
+				local name = entity.name
+				local fullGroup = ChestGroups.getFullGroupWithOriginals(name)
+				if fullGroup then
+					local replacementName = fullGroup[name]
+					Util.debugLog("Saving " .. replacementName .." entity on pre placed for " .. player.name)
+					Storage.PlayerFastReplace.add(player, replacementName, entity)
+				end
+				return
+			end
+		end
+	end
+end
+
+script.on_event(defines.events.on_pre_build, on_pre_entity_placed)
+
 function on_entity_placed(event)
 	local entity = event.created_entity
 	local entityName = entity.name
@@ -23,8 +46,14 @@ function on_entity_placed(event)
 	-- If it is a generic chest, draw GUI and add it and the player match to the table
 	local replacements = ChestGroups.getReplacementsFromGeneric(entityName)
 	if replacements then
-		Storage.PlayerUiOpen.add(player, entity)
-		UI.Selection.draw(player, replacements)
+		local fastReplaceChestData = Storage.PlayerFastReplace.get(player)
+		if fastReplaceChestData and fastReplaceChestData.replacementChestName  ~= entityName then
+			Actions.switchChestFromChestData(entity, fastReplaceChestData, player)
+			Storage.PlayerFastReplace.remove(player)
+		else
+			Storage.PlayerUiOpen.add(player, entity)
+			UI.Selection.draw(player, replacements)
+		end
 	end
 	
 	-- If the player just placed a replacement chest, and their cursor is empty, try to fill it with generics from their inventory

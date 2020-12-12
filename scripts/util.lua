@@ -66,10 +66,14 @@ function Util.mathMax(nums)
 	return math.max(unpack(t))
 end
 
-function Util.getEntityDataKey(entity)
+function Util.getEntityDataKey(entity, nameOverride)
 	local name = entity.name
 	if name == "entity-ghost" then
 		name = entity.ghost_name
+	end
+	
+	if nameOverride then
+		name = nameOverride
 	end
 	
 	return entity.surface.name .. "_" .. entity.position.x .. "_" .. entity.position.y .. "_" .. name

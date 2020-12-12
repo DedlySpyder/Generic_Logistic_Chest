@@ -14,7 +14,7 @@ function Migrations.handle(data)
 			if Migrations.versionCompare(oldVersion, "0.4.0") then
 				Migrations.to_0_4_0()
 			end
-			if Migrations.versionCompare(oldVersion, "0.4.3") then
+			if Migrations.versionCompare(oldVersion, "0.4.3") or Migrations.versionCompare(oldVersion, "0.4.5") then
 				Storage.init()
 			end
 		end

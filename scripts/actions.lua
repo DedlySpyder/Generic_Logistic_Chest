@@ -65,16 +65,18 @@ function Actions.switchUpgrade(entity, targetName)
 end
 
 -- Returns the new entity
-function Actions.switchChestFromChestData(entity, chestData)
-	return Actions.switchChest(entity, chestData.replacementChestName, nil, chestData.requestFilters, chestData.storageFilter, chestData.requestFromBufferToggle)
+-- This overloaded version works for fastReplace and ghost chest data
+function Actions.switchChestFromChestData(entity, chestData, player)
+	return Actions.switchChest(entity, chestData.replacementChestName, player, chestData.requestFilters, chestData.storageFilter, chestData.requestFromBufferToggle)
 end
 
 function Actions.switchChest(entity, replacementName, player, requestFilters, storageFilter, requestFromBufferToggle)
 	if entity and entity.valid then
+		local entityName = entity.name
 		local surface = entity.surface
 		local position = entity.position
 		local force = entity.force
-		Util.debugLog("Switching chest " .. entity.name .. " at (" .. position.x .. "," .. position.y .. ") on " .. surface.name .. " with " .. replacementName)
+		Util.debugLog("Switching chest " .. entityName .. " at (" .. position.x .. "," .. position.y .. ") on " .. surface.name .. " with " .. replacementName)
 		
 		-- Fast replace can handle moving items and spilling excess, but it will also spill the generic chest, and does so last, so finding it could be hard to judge
 		local tempChest = surface.create_entity{name=Util.MOD_PREFIX .. "temp", position=position, force=force}
@@ -93,6 +95,19 @@ function Actions.switchChest(entity, replacementName, player, requestFilters, st
 				spill=false,
 				create_build_effect_smoke=false
 			}
+			
+			-- Fast replacing with a player adds a new chest to their inventory
+			if player then
+				local cursor = player.cursor_stack
+				if cursor and cursor.valid_for_read and cursor.name == entityName then
+					Util.debugLog("Removing item from " .. player.name .. "'s cursor")
+					cursor.count = cursor.count - 1
+				else
+					local generic = ChestGroups.getGenericFromReplacement(replacementName)
+					Util.debugLog("Removing " .. generic .. " from " .. player.name .. "'s inventory")
+					player.get_main_inventory().remove{name=generic, count=1}
+				end
+			end
 			
 			-- The inventory is going to be manually transferred, so it can be spilled without duplicating the generic chest
 			newChest.get_inventory(defines.inventory.chest).clear()

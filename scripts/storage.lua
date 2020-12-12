@@ -8,6 +8,7 @@ function Storage.init()
 	
 	global.playerChestData = global.playerChestData or {} -- map of player index -> name of the copied chest
 	global.playerSelection = global.playerSelection or {} -- map of player index -> name of the selected chest
+	global.playerFastReplace = global.playerFastReplace or {} -- map of player index -> {replacementChestName=String, requestFilters, storageFilter, requestFromBufferToggle}
 end
 
 function Storage._getRequestFilters(entity)
@@ -74,6 +75,7 @@ function Storage.PlayerUiOpen.get(player)
 end
 
 
+-- Must be kept in line with player fast replace chest filters
 Storage.ChestData = {}
 function Storage.ChestData.add(ghostEntity, replacementChestName, requestFilters, storageFilter, requestFromBufferToggle)
 	local key = Util.getEntityDataKey(ghostEntity)
@@ -141,4 +143,23 @@ end
 
 function Storage.PlayerSelection.get(player)
 	return global.playerSelection[player.index]
+end
+
+
+-- Must be kept in line with chest data for chest filters
+Storage.PlayerFastReplace = {}
+function Storage.PlayerFastReplace.add(player, replacementChestName, oldEntity)
+	local requestFilters = Storage._getRequestFilters(oldEntity)
+	local storageFilter = Storage._getStorageFilter(oldEntity)
+	local requestFromBufferToggle = Storage._getRequestFromBuffers(oldEntity)
+	
+	global.playerFastReplace[player.index] = {replacementChestName=replacementChestName, requestFilters=requestFilters, storageFilter=storageFilter, requestFromBufferToggle=requestFromBufferToggle}
+end
+
+function Storage.PlayerFastReplace.remove(player)
+	global.playerFastReplace[player.index] = nil
+end
+
+function Storage.PlayerFastReplace.get(player)
+	return global.playerFastReplace[player.index]
 end
