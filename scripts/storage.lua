@@ -67,7 +67,7 @@ end
 
 function Storage.ChestData.get(entity)
 	local key = Util.getEntityDataKey(entity)
-	return global.chestData[key]
+	return global.chestData[key], key
 end
 
 function Storage.ChestData.purge()

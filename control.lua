@@ -94,11 +94,10 @@ function on_robot_built_entity(event)
 	
 	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
 	if replacements then
-		local chestData = Storage.ChestData.get(entity)
+		local chestData, key = Storage.ChestData.get(entity)
 		if chestData then
-			local storageKey = Util.getEntityDataKey(entity)
 			Actions.switchChestFromChestData(entity, chestData)
-			Storage.ChestData.removeByKey(storageKey)
+			Storage.ChestData.removeByKey(key)
 		end
 	end
 end
