@@ -54,6 +54,7 @@ function on_entity_placed(event)
 			Storage.PlayerUiOpen.add(player, entity)
 			UI.Selection.draw(player, replacements)
 		end
+		return
 	end
 	
 	-- If the player just placed a replacement chest, and their cursor is empty, try to fill it with generics from their inventory
@@ -68,14 +69,27 @@ function on_entity_placed(event)
 				player.cursor_stack.swap_stack(chestStack)
 			end
 		end
+		return
 	end
 	
 	-- Check for a ghost (from blueprints)
 	if entityName == "entity-ghost" then
 		if not Actions.switchGhost(entity) then
+			local ghostName = entity.ghost_name
+			
 			-- If the normal switch didn't happen, then see if a generic was placed on top of a replacement, this likely means that the player is undoing the selection UI action
-			local replacements = ChestGroups.getReplacementsFromGeneric(entity.ghost_name)
-			if replacements then
+			local replacements = ChestGroups.getReplacementsFromGeneric(ghostName)
+			
+			-- If an original chest was placed on top of a replacement, then that means an original -> generic fast replace occurred and is being undone
+			local fullGroup = ChestGroups.getFullGroupWithOriginals(ghostName)
+			
+			if replacements or fullGroup then
+				if not replacements then
+					local replacementName = fullGroup[ghostName]
+					if replacementName == ghostName then return end
+					replacements = replacementName
+				end
+				
 				local force = entity.force
 				local position = entity.position
 				local foundReplacements = entity.surface.find_entities_filtered{position=position, name=replacements, force=force}
@@ -85,6 +99,7 @@ function on_entity_placed(event)
 					Util.debugLog("Manually marking " .. replacement.name .. " at " .. serpent.line(position) .. " for deconstruction")
 					replacement.order_deconstruction(force, player)
 				end
+				return
 			end
 		end
 	end
