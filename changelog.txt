@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.5
+Date: 11. 12. 2020
+  Features:
+    - Added support for upgrading from a normal logistic chest to a generic chest replacement version of it (fast replace or upgrade planner/shift clicking)
+    - Added support for "building" a generic chest on top of a current generic chest to reopen the UI
+  Bugfixes:
+    - Fixed undo after using selection UI will properly deconstruct replacement chest
+    - Fixed undo after fast replace with generic chests sometimes making robots get stuck
+    - Fixed request_from_buffer setting on requester chests not being copied when building with construction robots
+---------------------------------------------------------------------------------------------------
 Version: 0.4.4
 Date: 07. 12. 2020
   Bugfixes:
