@@ -63,6 +63,17 @@ end
 
 script.on_event(defines.events.on_built_entity, on_entity_placed)
 
+function on_marked_for_upgrade(event)
+	local entity  = event.entity
+	local targetName = event.target.name
+	
+	if ChestGroups.getFullGroup(targetName) then
+		Actions.switchUpgrade(entity, targetName)
+	end
+end
+
+script.on_event(defines.events.on_marked_for_upgrade, on_marked_for_upgrade)
+
 function on_entity_destroyed(event)
 	local entity = event.entity
 	

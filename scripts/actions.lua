@@ -39,6 +39,31 @@ function Actions.switchGhost(ghostEntity)
 	return false
 end
 
+function Actions.switchUpgrade(entity, targetName)
+	local entityName = entity.name
+	Util.debugLog("Upgrading " .. entityName .. " to " .. targetName)
+	
+	local generic = ChestGroups.getGenericFromReplacement(targetName)
+	if generic then
+		Storage.ChestData.addEntity(entity, targetName)
+		entity.order_upgrade{force=entity.force, target=generic, player=entity.last_user}
+	else
+		-- Only change the target if an upgrade was from a normal chest to a generic
+		-- If the source was a replacement chest then this allows for downgrading
+		generic = targetName
+		local fullGroupWithOriginals = ChestGroups.getFullGroupWithOriginals(entityName)
+		if fullGroupWithOriginals then
+			local replacement = fullGroupWithOriginals[entityName]
+			if replacement and replacement ~= entityName then
+				Util.debugLog("Switching target to " .. replacement)
+				targetName = replacement
+			end
+		end
+		
+		Storage.ChestData.addEntity(entity, targetName, generic)
+	end
+end
+
 -- Returns the new entity
 function Actions.switchChestFromChestData(entity, chestData)
 	return Actions.switchChest(entity, chestData.replacementChestName, nil, chestData.requestFilters, chestData.storageFilter, chestData.requestFromBufferToggle)
