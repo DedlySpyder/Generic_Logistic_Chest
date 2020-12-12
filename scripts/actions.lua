@@ -5,29 +5,6 @@ require("util")
 
 Actions = {}
 
-function Actions._getRequestFilters(entity)
-	local requestFilters = {}
-	for index=1, entity.request_slot_count do
-		local itemStack = entity.get_request_slot(index)
-		if itemStack then
-			table.insert(requestFilters, {index=index, name=itemStack.name, count=itemStack.count})
-		end
-	end
-	return requestFilters
-end
-
-function Actions._getStorageFilter(entity)
-	if entity.prototype.logistic_mode == "storage" or (entity.name == "entity-ghost" and entity.ghost_prototype and entity.ghost_prototype.logistic_mode == "storage") then
-		return entity.storage_filter
-	end
-end
-
-function Actions._getRequestFromBuffers(entity)
-	if entity.prototype.logistic_mode == "requester" or (entity.name == "entity-ghost" and entity.ghost_prototype and entity.ghost_prototype.logistic_mode == "requester") then
-		return entity.request_from_buffers
-	end
-end
-
 -- Returns true if the ghost was switched
 function Actions.switchGhost(ghostEntity)
 	local oldGhostName = ghostEntity.ghost_name
@@ -40,9 +17,9 @@ function Actions.switchGhost(ghostEntity)
 		local force = ghostEntity.force
 		
 		-- Save logistic filter data for when the replacement is built
-		local requestFilters = Actions._getRequestFilters(ghostEntity)
-		local storageFilter = Actions._getStorageFilter(ghostEntity)
-		local requestFromBufferToggle = Actions._getRequestFromBuffers(ghostEntity)
+		local requestFilters = Storage._getRequestFilters(ghostEntity)
+		local storageFilter = Storage._getStorageFilter(ghostEntity)
+		local requestFromBufferToggle = Storage._getRequestFromBuffers(ghostEntity)
 		
 		-- Save the circuit connections for the new ghost
 		local connectionDefinitions = ghostEntity.circuit_connection_definitions
@@ -97,9 +74,9 @@ function Actions.switchChest(entity, replacementName, player, requestFilters, st
 		else
 			Util.debugLog("Unable to fast replace chest, attempting to do it manually")
 			-- If fast replace doesn't work (maybe a mod chest doesn't have fast replace available?) then manually do what I can
-			requestFilters = requestFilters or Actions._getRequestFilters(entity)
-			storageFilter = storageFilter or Actions._getStorageFilter(entity)
-			requestFromBufferToggle = requestFromBufferToggle or Actions._getRequestFromBuffers(entity)
+			requestFilters = requestFilters or Storage._getRequestFilters(entity)
+			storageFilter = storageFilter or Storage._getStorageFilter(entity)
+			requestFromBufferToggle = requestFromBufferToggle or Storage._getRequestFromBuffers(entity)
 			local connectionDefs = entity.circuit_connection_definitions
 			
 			entity.destroy()

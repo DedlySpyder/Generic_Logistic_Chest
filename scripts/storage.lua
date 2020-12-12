@@ -4,9 +4,33 @@ Storage = {}
 
 function Storage.init()
 	global.playerUiOpen = global.playerUiOpen or {} -- map or player index -> array of LuaEntity chests
-	global.chestData = global.chestData or {} -- map of Util generated key (surface, position, name) -> {ghost=LuaEntity, replacementChestName=String, requestFilters=Table of request slots, storageFilter=LuaItemPrototype}
+	global.chestData = global.chestData or {} -- map of Util generated key (surface, position, name) -> {ghost=LuaEntity, replacementChestName=String, requestFilters, storageFilter, requestFromBufferToggle}
+	
 	global.playerChestData = global.playerChestData or {} -- map of player index -> name of the copied chest
 	global.playerSelection = global.playerSelection or {} -- map of player index -> name of the selected chest
+end
+
+function Storage._getRequestFilters(entity)
+	local requestFilters = {}
+	for index=1, entity.request_slot_count do
+		local itemStack = entity.get_request_slot(index)
+		if itemStack then
+			table.insert(requestFilters, {index=index, name=itemStack.name, count=itemStack.count})
+		end
+	end
+	return requestFilters
+end
+
+function Storage._getStorageFilter(entity)
+	if entity.prototype.logistic_mode == "storage" or (entity.name == "entity-ghost" and entity.ghost_prototype and entity.ghost_prototype.logistic_mode == "storage") then
+		return entity.storage_filter
+	end
+end
+
+function Storage._getRequestFromBuffers(entity)
+	if entity.prototype.logistic_mode == "requester" or (entity.name == "entity-ghost" and entity.ghost_prototype and entity.ghost_prototype.logistic_mode == "requester") then
+		return entity.request_from_buffers
+	end
 end
 
 
