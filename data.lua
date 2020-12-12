@@ -15,6 +15,12 @@ data:extend({
 		linked_game_control = "copy-entity-settings",
 		key_sequence = ""
 	},
+	{
+		type = "custom-input",
+		name = "Generic_Logistic_build",
+		linked_game_control = "build",
+		key_sequence = ""
+	},
 	
 	{
 		type = "custom-input",

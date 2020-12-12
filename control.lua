@@ -223,6 +223,25 @@ end
 
 script.on_event("Generic_Logistic_copy_chest", on_player_copied)
 
+function on_custom_build(event)
+	local player = game.players[event.player_index]
+	local entity = player.selected
+	
+	-- If a player attempts to build a generic on top of a same generic, the game does not fire an event (because nothing happens)
+	-- So, this will open the UI for them
+	if entity then
+		local entityName = entity.name
+		local replacements = ChestGroups.getReplacementsFromGeneric(entityName)
+		local cursor = player.cursor_stack
+		if replacements and cursor and cursor.valid_for_read and cursor.name == entityName then
+			Storage.PlayerUiOpen.add(player, entity)
+			UI.Selection.draw(player, replacements)
+		end
+	end
+end
+
+script.on_event("Generic_Logistic_build", on_custom_build)
+
 function on_player_pasted(event)
 	local player = game.players[event.player_index]
 	local target = event.destination
