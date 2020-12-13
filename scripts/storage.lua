@@ -1,3 +1,4 @@
+require("config")
 require("util")
 
 Storage = {}
@@ -9,6 +10,12 @@ function Storage.init()
 	global.playerChestData = global.playerChestData or {} -- map of player index -> name of the copied chest
 	global.playerSelection = global.playerSelection or {} -- map of player index -> name of the selected chest
 	global.playerFastReplace = global.playerFastReplace or {} -- map of player index -> {replacementChestName=String, requestFilters, storageFilter, requestFromBufferToggle}
+	global.playerFastReplaceEvents = global.playerFastReplaceEvents or {} -- map of player index -> map of absolutePosition -> tick of event
+end
+
+function Storage.purge()
+	Storage.ChestData.purge()
+	Storage.PlayerFastReplaceEvents.purge()
 end
 
 function Storage._getRequestFilters(entity)
@@ -35,6 +42,7 @@ function Storage._getRequestFromBuffers(entity)
 end
 
 
+-- ~~ Player UI Open ~~ --
 Storage.PlayerUiOpen = {}
 function Storage.PlayerUiOpen.add(player, entity)
 	if entity and entity.valid then
@@ -75,6 +83,7 @@ function Storage.PlayerUiOpen.get(player)
 end
 
 
+-- ~~ Chest Data ~~ --
 -- Must be kept in line with player fast replace chest filters
 Storage.ChestData = {}
 function Storage.ChestData.add(ghostEntity, replacementChestName, requestFilters, storageFilter, requestFromBufferToggle)
@@ -116,6 +125,7 @@ function Storage.ChestData.purge()
 end
 
 
+-- ~~ Player Copy Data ~~ --
 Storage.PlayerCopyData = {}
 function Storage.PlayerCopyData.add(player, chestName)
 	Util.debugLog("Adding " .. chestName .. " to " .. player.name .. "'s copy data")
@@ -132,6 +142,7 @@ function Storage.PlayerCopyData.get(player)
 end
 
 
+-- ~~ Player Selection ~~ --
 Storage.PlayerSelection = {}
 function Storage.PlayerSelection.add(player, chestName)
 	global.playerSelection[player.index] = chestName
@@ -146,6 +157,7 @@ function Storage.PlayerSelection.get(player)
 end
 
 
+-- ~~ Player Fast Replace ~~ --
 -- Must be kept in line with chest data for chest filters
 Storage.PlayerFastReplace = {}
 function Storage.PlayerFastReplace.add(player, replacementChestName, oldEntity)
@@ -162,4 +174,40 @@ end
 
 function Storage.PlayerFastReplace.get(player)
 	return global.playerFastReplace[player.index]
+end
+
+
+-- ~~ Player Fast Replace Events ~~ --
+Storage.PlayerFastReplaceEvents = {}
+function Storage.PlayerFastReplaceEvents.add(player, position)
+	local absolutePosition = Util.getAbsolutePosition(player.surface, position)
+	Util.debugLog("Adding fast replace event for " .. player.index .. " at " .. absolutePosition)
+	
+	if not global.playerFastReplaceEvents[player.index] then
+		global.playerFastReplaceEvents[player.index] = {}
+	end
+	
+	global.playerFastReplaceEvents[player.index][absolutePosition] = game.tick
+end
+
+function Storage.PlayerFastReplaceEvents.get(player, position)
+	local playerData = global.playerFastReplaceEvents[player.index]
+	if playerData then
+		local absolutePosition = Util.getAbsolutePosition(player.surface, position)
+		return global.playerFastReplaceEvents[player.index][absolutePosition] or game.tick
+	end
+	return game.tick
+end
+
+function Storage.PlayerFastReplaceEvents.purge()
+	local currentTick = game.tick
+	local window = Config.PLAYER_FAST_REPLACE_WINDOW
+	for playerIndex, positions in pairs(global.playerFastReplaceEvents) do
+		for pos, tick in pairs(positions) do
+			if currentTick > tick + window then
+				Util.debugLog("Purging player fast replace event data for " .. playerIndex .. " - " .. pos)
+				positions[pos] = nil
+			end
+		end
+	end
 end

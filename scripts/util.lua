@@ -76,7 +76,11 @@ function Util.getEntityDataKey(entity, nameOverride)
 		name = nameOverride
 	end
 	
-	return entity.surface.name .. "_" .. entity.position.x .. "_" .. entity.position.y .. "_" .. name
+	return Util.getAbsolutePosition(entity.surface, entity.position) .. "_" .. name
+end
+
+function Util.getAbsolutePosition(surface, position)
+	return surface.name .. "_" ..position.x .. "_" .. position.y
 end
 
 

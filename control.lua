@@ -1,5 +1,6 @@
 require("scripts.actions")
 require("scripts.chest_groups")
+require("scripts.config")
 require("scripts.migrations")
 require("scripts.storage")
 require("scripts.ui")
@@ -17,16 +18,23 @@ script.on_configuration_changed(Migrations.handle)
 
 function on_pre_entity_placed(event)
 	local player = game.players[event.player_index]
+	local position = event.position
 	
 	-- Shift building is covered by upgrading events
 	if not event.shift_build then
-		local entities = player.surface.find_entities_filtered{position=event.position, force=force}
+		local entities = player.surface.find_entities_filtered{position=position, force=force}
 		if #entities > 0 then
 			for _, entity in ipairs(entities) do
 				local name = entity.name
 				local fullGroup = ChestGroups.getFullGroupWithOriginals(name)
 				if fullGroup then
 					local replacementName = fullGroup[name]
+					local lastEvent = Storage.PlayerFastReplaceEvents.get(player, position)
+					
+					-- Exit fast replace if the old chest is a replacement, this allows for the generic to actually get built and the UI drawn
+					-- Drag building triggers this constantly, so needed to introduce a slight lag to it. Otherwise, the normal chest gets replaced then the next tick the replacement turns into a generic
+					if replacementName == name and game.tick > lastEvent + Config.PLAYER_FAST_REPLACE_WINDOW then return end
+					
 					Util.debugLog("Saving " .. replacementName .." entity on pre placed for " .. player.name)
 					Storage.PlayerFastReplace.add(player, replacementName, entity)
 					return
@@ -48,6 +56,7 @@ function on_entity_placed(event)
 	if replacements then
 		local fastReplaceChestData = Storage.PlayerFastReplace.get(player)
 		if fastReplaceChestData and fastReplaceChestData.replacementChestName ~= entityName then
+			Storage.PlayerFastReplaceEvents.add(player, entity.position)
 			Actions.switchChestFromChestData(entity, fastReplaceChestData, player)
 			Storage.PlayerFastReplace.remove(player)
 		else
@@ -327,4 +336,4 @@ script.on_event("Generic_Logistic_select_scroll_up", build_on_select_scroll(1))
 script.on_event("Generic_Logistic_select_scroll_down", build_on_select_scroll(-1))
 
 
-script.on_nth_tick(settings.global["Generic_Logistic_chest_data_purge_period"].value * 60 * 60, Storage.ChestData.purge)
+script.on_nth_tick(settings.global["Generic_Logistic_chest_data_purge_period"].value * 60 * 60, Storage.purge)
