@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.7
+Date: 13. 12. 2020
+  Features:
+    - Changed fast replace logic to not convert a generic chest when building on top of a replacement generic chest (green symbol)
+    - Added a setting to adjust the lag before a generic chest can be placed on top of a replacement generic chest (drag building constantly triggers builds, so this lag is needed to support drag building)
+  Bugfixes:
+    - Fixed undo to work in more scenarios (when drag building to fast replace undo will take many presses to undo everything, so is not really recommended)
+---------------------------------------------------------------------------------------------------
 Version: 0.4.6
 Date: 12. 12. 2020
   Bugfixes:

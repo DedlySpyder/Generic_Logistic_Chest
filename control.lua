@@ -33,7 +33,7 @@ function on_pre_entity_placed(event)
 					
 					-- Exit fast replace if the old chest is a replacement, this allows for the generic to actually get built and the UI drawn
 					-- Drag building triggers this constantly, so needed to introduce a slight lag to it. Otherwise, the normal chest gets replaced then the next tick the replacement turns into a generic
-					if replacementName == name and game.tick > lastEvent + Config.PLAYER_FAST_REPLACE_WINDOW then return end
+					if replacementName == name and game.tick > lastEvent + Config.PLAYER_FAST_REPLACE_LAG then return end
 					
 					Util.debugLog("Saving " .. replacementName .." entity on pre placed for " .. player.name)
 					Storage.PlayerFastReplace.add(player, replacementName, entity)

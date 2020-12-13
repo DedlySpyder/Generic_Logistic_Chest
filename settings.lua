@@ -7,7 +7,7 @@ data:extend({
 		order = "100"
 	},
 	{
-		name = "Generic_Logistic_fast_replace_window_lag",
+		name = "Generic_Logistic_fast_replace_lag",
 		type = "int-setting",
 		setting_type = "runtime-global",
 		default_value = 15,

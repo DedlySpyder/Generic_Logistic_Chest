@@ -201,10 +201,10 @@ end
 
 function Storage.PlayerFastReplaceEvents.purge()
 	local currentTick = game.tick
-	local window = Config.PLAYER_FAST_REPLACE_WINDOW
+	local lag = Config.PLAYER_FAST_REPLACE_LAG
 	for playerIndex, positions in pairs(global.playerFastReplaceEvents) do
 		for pos, tick in pairs(positions) do
-			if currentTick > tick + window then
+			if currentTick > tick + lag then
 				Util.debugLog("Purging player fast replace event data for " .. playerIndex .. " - " .. pos)
 				positions[pos] = nil
 			end
