@@ -8,6 +8,7 @@ ChestGroups._cache.REPLACEMENT_TO_GENERIC = nil
 ChestGroups._cache.FULL_GROUPING = nil
 ChestGroups._cache.FULL_GROUPING_LIST = nil
 ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS = nil
+ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST = nil
 
 -- Returns the chest group and whether it should be cached or not
 function ChestGroups.getGroups()
@@ -159,6 +160,33 @@ function ChestGroups.getFullGroupsWithOriginalsMapping()
 	return ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS
 end
 
+-- Returns a map of chest -> chest group (list of chests) (including originals)
+function ChestGroups.getFullGroupsWithOriginalsListMapping()
+	if not ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST then
+		Util.debugLog("No cache found for full grouping with originals list mapping, generating now")
+		local rawChestGroups, cache = ChestGroups.getGroups()
+		local mapping = {}
+		for _, group in ipairs(rawChestGroups) do
+			local finalGroup = {Util.MOD_PREFIX .. group.name}
+			mapping[Util.MOD_PREFIX .. group.name] = finalGroup
+			for _, replacement in ipairs(group.replacements) do
+				table.insert(finalGroup, replacement)
+				
+				local modReplacement = Util.MOD_PREFIX .. replacement
+				table.insert(finalGroup, modReplacement)
+				mapping[modReplacement] = finalGroup
+			end
+		end
+		
+		if not cache then
+			Util.debugLog("Skipping cache setting")
+			return mapping
+		end
+		ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST = mapping
+	end
+	return ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST
+end
+
 
 -- ~~ Getters/Tests ~~ --
 
@@ -180,6 +208,10 @@ end
 
 function ChestGroups.getFullGroupWithOriginals(name)
 	return ChestGroups.getFullGroupsWithOriginalsMapping()[name]
+end
+
+function ChestGroups.getFullGroupWithOriginalsList(name)
+	return ChestGroups.getFullGroupsWithOriginalsListMapping()[name]
 end
 
 

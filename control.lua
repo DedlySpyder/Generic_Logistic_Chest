@@ -83,33 +83,21 @@ function on_entity_placed(event)
 	
 	-- Check for a ghost (from blueprints)
 	if entityName == "entity-ghost" then
-		if not Actions.switchGhost(entity) then
-			local ghostName = entity.ghost_name
+		local fullGroupList = ChestGroups.getFullGroupWithOriginalsList(entity.ghost_name)
+		if fullGroupList then
+			local force = entity.force
+			local position = entity.position
+			local foundReplacements = entity.surface.find_entities_filtered{position=position, name=fullGroupList, force=force}
 			
-			-- If the normal switch didn't happen, then see if a generic was placed on top of a replacement, this likely means that the player is undoing the selection UI action
-			local replacements = ChestGroups.getReplacementsFromGeneric(ghostName)
-			
-			-- If an original chest was placed on top of a replacement, then that means an original -> generic fast replace occurred and is being undone
-			local fullGroup = ChestGroups.getFullGroupWithOriginals(ghostName)
-			
-			if replacements or fullGroup then
-				if not replacements then
-					local replacementName = fullGroup[ghostName]
-					if replacementName == ghostName then return end
-					replacements = replacementName
-				end
-				
-				local force = entity.force
-				local position = entity.position
-				local foundReplacements = entity.surface.find_entities_filtered{position=position, name=replacements, force=force}
-				
-				if #foundReplacements > 0 then
-					local replacement = foundReplacements[1]
-					Util.debugLog("Manually marking " .. replacement.name .. " at " .. serpent.line(position) .. " for deconstruction")
-					replacement.order_deconstruction(force, player)
-				end
-				return
+			-- Any orignal/generic/replacement chest under the ghost should be deconstructed, to handle undo scenarios
+			for _, replacement in ipairs(foundReplacements) do
+				local replacement = foundReplacements[1]
+				Util.debugLog("Manually marking " .. replacement.name .. " at " .. serpent.line(position) .. " for deconstruction")
+				replacement.order_deconstruction(force, player)
 			end
+			
+			Actions.switchGhost(entity)
+			return
 		end
 	end
 end
