@@ -1,12 +1,12 @@
+require("config")
+
 Util = {}
 
 Util.MOD_PREFIX = "Generic_Logistic_"
 
-Util.DEBUG_MODE = settings.startup["Generic_Logistic_debug_mode"].value
-
 Util._DEBUG_LOG_CACHE = {message="", count=0}
 
-if Util.DEBUG_MODE then
+if Config.DEBUG_MODE then
 	Util.debugLog = function(message)
 		if game then
 			local formattedMessage = "[" .. game.tick .. "] " .. message

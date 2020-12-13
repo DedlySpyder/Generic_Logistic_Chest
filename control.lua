@@ -336,4 +336,4 @@ script.on_event("Generic_Logistic_select_scroll_up", build_on_select_scroll(1))
 script.on_event("Generic_Logistic_select_scroll_down", build_on_select_scroll(-1))
 
 
-script.on_nth_tick(settings.global["Generic_Logistic_chest_data_purge_period"].value * 60 * 60, Storage.purge)
+script.on_nth_tick(Config.DATA_PURGE_PERIOD * 60 * 60, Storage.purge)
