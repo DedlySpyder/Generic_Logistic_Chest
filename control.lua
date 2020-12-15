@@ -305,8 +305,21 @@ function build_on_select_scroll(scrollDistance)
 	return function(event)
 		local player = game.players[event.player_index]
 		local cursorStack = player.cursor_stack
+		
+		local cursorChestName, count = nil, nil
+		local isGhost = false
 		if cursorStack and cursorStack.valid and cursorStack.valid_for_read then
-			local cursorChestName = cursorStack.name
+			cursorChestName = cursorStack.name
+			count = cursorStack.count
+		else
+			local ghost = player.cursor_ghost
+			if ghost then
+				cursorChestName = ghost.name
+				isGhost = true
+			end
+		end
+		
+		if cursorChestName then
 			local chestGroup = ChestGroups.getFullGroupList(cursorChestName)
 			if chestGroup then
 				local groupCount = #chestGroup
@@ -330,9 +343,15 @@ function build_on_select_scroll(scrollDistance)
 					end
 					
 					local newChestName = chestGroup[newPosition]
-					Util.debugLog("Scrolling chest from " .. cursorChestName .. " to " .. newChestName .. " for " .. player.name)
-					cursorStack.set_stack({name = newChestName, count = cursorStack.count})
-					Storage.PlayerSelection.add(player, newChestName)
+					if isGhost then
+						Util.debugLog("Scrolling ghost chest from " .. cursorChestName .. " to " .. newChestName .. " for " .. player.name)
+						player.cursor_ghost = newChestName
+					
+					else
+						Util.debugLog("Scrolling chest from " .. cursorChestName .. " to " .. newChestName .. " for " .. player.name)
+						cursorStack.set_stack({name = newChestName, count = count})
+						Storage.PlayerSelection.add(player, newChestName)
+					end
 				else
 					Util.debugLog("ERROR: Did not find chest " .. cursorChestName .. " in chestGroup " .. serpent.line(chestGroup))
 				end
