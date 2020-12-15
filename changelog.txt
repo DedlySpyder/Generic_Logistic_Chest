@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.8
+Date: 14. 12. 2020
+  Features:
+    - Using the pipette tool ("Q" by default) on a replacement chest will convert generic chests in the player's inventory to that replacement type and insert it into their cursor
+    - Added scrolling support for ghost generic/replacement entities when in the player's cursor
+  Bugfixes:
+    - Fixed crash when copying a generic chest onto a replacement chest (this will now reopen the UI for the target chest)
+---------------------------------------------------------------------------------------------------
 Version: 0.4.7
 Date: 13. 12. 2020
   Features:
