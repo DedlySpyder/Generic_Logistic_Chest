@@ -1,3 +1,4 @@
+require("storage")
 require("util")
 
 UI = {}
@@ -10,7 +11,9 @@ UI.Selection.CLOSE_BUTTON = Util.MOD_PREFIX .. "close"
 
 -- Returns whether the Selection UI was drawn or not
 -- If it was not drawn then the chest should just be considered a normal chest
-function UI.Selection.draw(player, replacements)
+function UI.Selection.draw(player, replacements, chestEntity)
+	Storage.PlayerUiOpen.add(player, chestEntity)
+	
 	if player and player.valid and not UI.Selection.isOpen(player) then
 		Util.debugLog("Drawing selection UI for " .. player.name)
 		

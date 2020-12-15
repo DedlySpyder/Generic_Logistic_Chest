@@ -60,8 +60,7 @@ function on_entity_placed(event)
 			Actions.switchChestFromChestData(entity, fastReplaceChestData, player)
 			Storage.PlayerFastReplace.remove(player)
 		else
-			Storage.PlayerUiOpen.add(player, entity)
-			UI.Selection.draw(player, replacements)
+			UI.Selection.draw(player, replacements, entity)
 		end
 		return
 	end
@@ -246,8 +245,7 @@ function on_custom_build(event)
 		local replacements = ChestGroups.getReplacementsFromGeneric(entityName)
 		local cursor = player.cursor_stack
 		if replacements and cursor and cursor.valid_for_read and cursor.name == entityName then
-			Storage.PlayerUiOpen.add(player, entity)
-			UI.Selection.draw(player, replacements)
+			UI.Selection.draw(player, replacements, entity)
 		end
 	end
 end
@@ -272,7 +270,12 @@ function on_player_pasted(event)
 				end
 				
 				Util.debugLog("Pasting chest " .. sourceName .. " onto chest " .. target.name)
-				Actions.switchChest(target, sourceName, player)
+				local newChest = Actions.switchChest(target, sourceName, player)
+				
+				local replacements = ChestGroups.getReplacementsFromGeneric(sourceName)
+				if replacements and newChest then
+					UI.Selection.draw(player, replacements, newChest)
+				end
 			end
 		end
 	end

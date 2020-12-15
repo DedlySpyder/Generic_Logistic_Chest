@@ -103,7 +103,7 @@ function Actions.switchChest(entity, replacementName, player, requestFilters, st
 					Util.debugLog("Removing item from " .. player.name .. "'s cursor")
 					cursor.count = cursor.count - 1
 				else
-					local generic = ChestGroups.getGenericFromReplacement(replacementName)
+					local generic = ChestGroups.getGenericFromReplacement(replacementName) or replacementName
 					Util.debugLog("Removing " .. generic .. " from " .. player.name .. "'s inventory")
 					player.get_main_inventory().remove{name=generic, count=1}
 				end
