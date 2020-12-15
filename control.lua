@@ -12,7 +12,7 @@ script.on_init(Storage.init)
 
 script.on_configuration_changed(Migrations.handle)
 
-
+-- TODO --- scrolling for ghosts??
 
 -- ~~ Events ~~ --
 
@@ -282,6 +282,24 @@ function on_player_pasted(event)
 end
 
 script.on_event(defines.events.on_pre_entity_settings_pasted, on_player_pasted)
+
+function on_player_pipette(event)
+	local player = game.players[event.player_index]
+	local item = event.item
+	local itemName = item.name
+	local generic = ChestGroups.getGenericFromReplacement(itemName)
+	
+	if generic then
+		local genericStack = player.get_main_inventory().find_item_stack(generic)
+		if genericStack then
+			genericStack.set_stack({name = itemName, count = genericStack.count})
+			player.cursor_stack.transfer_stack(genericStack)
+			Storage.PlayerSelection.add(player, itemName)
+		end
+	end
+end
+
+script.on_event(defines.events.on_player_pipette, on_player_pipette)
 
 function build_on_select_scroll(scrollDistance)
 	return function(event)
