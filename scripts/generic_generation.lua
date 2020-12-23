@@ -227,7 +227,7 @@ function Generic_Logistic_Generator._internal.createGenericChestItem(entityName,
 	item.localised_name = {"Generic_Logistic_generic_prefix", {localeName}}
 	item.localised_description = {"Generic_Logistic_generic_logistic_chest_description", {localeName}}
 	item.name = genericChestName
-	item.order = "b[storage]-c" .. Generic_Logistic_Generator._internal.GROUP_COUNT
+	item.order = "a[storage]-0" .. Generic_Logistic_Generator._internal.GROUP_COUNT
 	item.place_result = genericChestName
 	
 	Generic_Logistic_Generator._internal.generifyIcons(item)
