@@ -17,7 +17,10 @@ function Migrations.handle(data)
 			if Migrations.versionCompare(oldVersion, "0.4.3") or
 				Migrations.versionCompare(oldVersion, "0.4.5") or
 				Migrations.versionCompare(oldVersion, "0.4.7") then
-				Storage.init()
+					Storage.init()
+			end
+			if Migrations.versionCompare(oldVersion, "0.5.0") then
+				Migrations.to_0_5_0()
 			end
 		end
 	end
@@ -85,7 +88,6 @@ function Migrations.to_0_3_0()
 	end)
 	
 	Storage.init()
-	Storage.ChestData.purge()
 end
 
 function Migrations.to_0_4_0()
@@ -99,4 +101,48 @@ function Migrations.to_0_4_0()
 	global.playerUiOpen = newTable
 	
 	Storage.init()
+end
+
+function Migrations.to_0_5_0()
+	-- This actually holds ghosts and entities that are being upgraded
+	for _, data in pairs(global.chestData) do
+		local entity = data.ghost
+		local replacementName = data.replacementChestName
+		if entity and entity.valid then
+			if entity.name == "entity-ghost" then
+				local surface = entity.surface
+				local position = entity.position
+				local force = entity.force
+
+				-- Save logistic filter data for when the replacement is built
+				local requestFilters = data.requestFilters
+				local storageFilter = data.storageFilter
+				local requestFromBufferToggle = data.requestFromBufferToggle
+
+				-- Save the circuit connections for the new ghost
+				local connectionDefinitions = entity.circuit_connection_definitions
+
+				-- Destroy the old ghost and create a new one
+				entity.destroy()
+
+				local newGhost = surface.create_entity{name="entity-ghost", inner_name=replacementName, position=position, force=force, request_filters=data.requestFilters}
+
+				if storageFilter and newGhost.ghost_prototype.logistic_mode == "storage" then
+					newGhost.storage_filter = storageFilter
+				end
+
+				if requestFromBufferToggle and newGhost.ghost_prototype.logistic_mode == "requester" then
+					newGhost.request_from_buffers = requestFromBufferToggle
+				end
+
+				for _, connectionDefinition in pairs(connectionDefinitions) do
+					newGhost.connect_neighbour(connectionDefinition)
+				end
+			else
+				entity.cancel_upgrade(entity.force, entity.last_user)
+				entity.order_upgrade{force=entity.force, target=replacementName, player=entity.last_user}
+			end
+		end
+	end
+	global.chestData = nil
 end

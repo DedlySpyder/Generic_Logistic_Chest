@@ -66,19 +66,6 @@ function Util.mathMax(nums)
 	return math.max(unpack(t))
 end
 
-function Util.getEntityDataKey(entity, nameOverride)
-	local name = entity.name
-	if name == "entity-ghost" then
-		name = entity.ghost_name
-	end
-	
-	if nameOverride then
-		name = nameOverride
-	end
-	
-	return Util.getAbsolutePosition(entity.surface, entity.position) .. "_" .. name
-end
-
 function Util.getAbsolutePosition(surface, position)
 	return surface.name .. "_" ..position.x .. "_" .. position.y
 end

@@ -165,6 +165,10 @@ function Generic_Logistic_Generator._internal.createReplacementEntity(entityName
 	entity.localised_description = {"entity-description." .. entity.name}
 	entity.name = Util.MOD_PREFIX .. entity.name
 	entity.minable.result = genericChestName
+	entity.placeable_by = {
+		item = genericChestName,
+		count = 1
+	}
 	
 	Generic_Logistic_Generator._internal.generifyIcons(entity, true)
 	

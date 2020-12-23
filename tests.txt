@@ -9,10 +9,14 @@ UI closes if chest is removed
 
 # Blueprint
 Should swap to generic on building blueprint
-Should swap back when placed by bots
+Should swap back when placed by bots (implicit in game now)
 Storage filter
 Request filter
-Circuit connections to ghosts (if chest or other entity built first) (as of Factorio 1.1)
+Circuit connections to ghosts (if chest or other entity built first)
+
+
+# Upgrading
+Works (implicit in game now)
 
 
 # Chest swapping
@@ -25,3 +29,12 @@ Triggers a chest swap
 Can copy OG chest to work for generics
 Copies filter settings (I think this is just the game doing it after the swap)
 Can't copy between different chest groups
+
+
+# Pipette Selection
+Both generic and replacement
+
+
+# Fast Replace
+Can build a generic on a normal chest and it will swap to the replacement
+Building a generic on a replacement will fast replace to the generic & open UI

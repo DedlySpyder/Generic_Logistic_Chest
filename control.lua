@@ -12,8 +12,6 @@ script.on_init(Storage.init)
 
 script.on_configuration_changed(Migrations.handle)
 
--- TODO --- scrolling for ghosts??
-
 -- ~~ Events ~~ --
 
 function on_pre_entity_placed(event)
@@ -90,29 +88,15 @@ function on_entity_placed(event)
 			
 			-- Any orignal/generic/replacement chest under the ghost should be deconstructed, to handle undo scenarios
 			for _, replacement in ipairs(foundReplacements) do
-				local replacement = foundReplacements[1]
 				Util.debugLog("Manually marking " .. replacement.name .. " at " .. serpent.line(position) .. " for deconstruction")
 				replacement.order_deconstruction(force, player)
 			end
-			
-			Actions.switchGhost(entity)
 			return
 		end
 	end
 end
 
 script.on_event(defines.events.on_built_entity, on_entity_placed)
-
-function on_marked_for_upgrade(event)
-	local entity  = event.entity
-	local targetName = event.target.name
-	
-	if ChestGroups.getFullGroup(targetName) then
-		Actions.switchUpgrade(entity, targetName)
-	end
-end
-
-script.on_event(defines.events.on_marked_for_upgrade, on_marked_for_upgrade)
 
 function on_entity_destroyed(event)
 	local entity = event.entity
@@ -139,21 +123,6 @@ script.on_event(defines.events.on_pre_player_mined_item, on_entity_destroyed)
 script.on_event(defines.events.on_robot_pre_mined, on_entity_destroyed)
 script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, build_script_raised_filters())
 script.on_event(defines.events.on_entity_died, on_entity_destroyed)
-
-function on_robot_built_entity(event)
-	local entity = event.created_entity
-	
-	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
-	if replacements then
-		local chestData, key = Storage.ChestData.get(entity)
-		if chestData then
-			Actions.switchChestFromChestData(entity, chestData)
-			Storage.ChestData.removeByKey(key)
-		end
-	end
-end
-
-script.on_event(defines.events.on_robot_built_entity, on_robot_built_entity)
 
 function on_gui_click(event)
 	local elementName = event.element.name
@@ -285,16 +254,21 @@ script.on_event(defines.events.on_pre_entity_settings_pasted, on_player_pasted)
 
 function on_player_pipette(event)
 	local player = game.players[event.player_index]
-	local item = event.item
-	local itemName = item.name
-	local generic = ChestGroups.getGenericFromReplacement(itemName)
+	local replacements = ChestGroups.getReplacementsFromGeneric(event.item.name)
 	
-	if generic then
-		local genericStack = player.get_main_inventory().find_item_stack(generic)
-		if genericStack then
-			genericStack.set_stack({name = itemName, count = genericStack.count})
-			player.cursor_stack.transfer_stack(genericStack)
-			Storage.PlayerSelection.add(player, itemName)
+	if replacements then
+		local selectedEntity = player.selected
+		if selectedEntity then
+			local replacementName = selectedEntity.name
+			local cursorStack = player.cursor_stack
+			if cursorStack and cursorStack.valid_for_read then
+				-- Generic in the player's cursor from pipette
+				cursorStack.set_stack({name = replacementName, count = cursorStack.count})
+			else
+				-- Generic ghost in the player's cursor
+				player.cursor_ghost = replacementName
+			end
+			Storage.PlayerSelection.add(player, replacementName)
 		end
 	end
 end
@@ -362,6 +336,5 @@ end
 
 script.on_event("Generic_Logistic_select_scroll_up", build_on_select_scroll(1))
 script.on_event("Generic_Logistic_select_scroll_down", build_on_select_scroll(-1))
-
 
 script.on_nth_tick(Config.DATA_PURGE_PERIOD * 60 * 60, Storage.purge)
