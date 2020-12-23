@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: 22. 12. 2020
+  Changes:
+    - Converted the handling of ghosts/upgrading to use Factorio built-ins instead of custom scripts for a cleaner experience
+  Bugfixes:
+    - Changing a blueprint with generic chests (by placing, changing something, then copying the ghosts again) will now keep the replacement chests in the new blueprint
+---------------------------------------------------------------------------------------------------
 Version: 0.4.8
 Date: 14. 12. 2020
   Features:
