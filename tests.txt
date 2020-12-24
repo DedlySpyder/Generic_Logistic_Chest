@@ -33,6 +33,7 @@ Can't copy between different chest groups
 
 # Pipette Selection
 Both generic and replacement
+Can pipette ghosts as well
 
 
 # Fast Replace

@@ -260,6 +260,10 @@ function on_player_pipette(event)
 		local selectedEntity = player.selected
 		if selectedEntity then
 			local replacementName = selectedEntity.name
+			if replacementName == "entity-ghost" then
+				replacementName = selectedEntity.ghost_name
+			end
+			
 			local cursorStack = player.cursor_stack
 			if cursorStack and cursorStack.valid_for_read then
 				-- Generic in the player's cursor from pipette
