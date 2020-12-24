@@ -51,9 +51,10 @@ function Generic_Logistic_Generator.generateGroup(name, data)
 	local baseEntities = table.deepcopy(data.replacements)
 	table.insert(baseEntities, genericEntityBase)
 	local tech = Generic_Logistic_Generator._internal.choseLatestTech(baseEntities)
+	local genericOrder = Generic_Logistic_Generator._internal.calculateGenericOrder(baseEntities)
 	
 	Util.debugLog("Generic chest name: " .. genericName)
-	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName))
+	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName, genericOrder))
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech))
 	
@@ -152,6 +153,7 @@ function Generic_Logistic_Generator._internal.createReplacementItem(entityName)
 	item.localised_name = {"Generic_Logistic_generic_prefix", {"item-name." .. item.name}}
 	item.localised_description = {"item-description." .. item.name}
 	item.name = Util.MOD_PREFIX .. item.name
+	item.order = "zzzzzzzzzzzzzzzzzzzz"
 	item.flags = {"hidden"}
 	item.place_result = Util.MOD_PREFIX .. item.place_result -- This should never exist as an item, but just in case
 	
@@ -221,13 +223,29 @@ function Generic_Logistic_Generator._internal.choseLatestTech(baseEntityNames)
 	return latestTech
 end
 
+function Generic_Logistic_Generator._internal.calculateGenericOrder(baseEntityNames)
+	local lowestOrder = nil
+	for _, name in ipairs(baseEntityNames) do
+		local order = Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[name].order
+		if not lowestOrder or order < lowestOrder then
+			lowestOrder = order
+		end
+	end
+	
+	if lowestOrder then
+		return string.sub(lowestOrder, 1, #lowestOrder - 1)
+	else
+		return "a[storage]-0" .. Generic_Logistic_Generator._internal.GROUP_COUNT
+	end
+end
+
 -- Generic Chest Generation
-function Generic_Logistic_Generator._internal.createGenericChestItem(entityName, genericChestName, localeName)
+function Generic_Logistic_Generator._internal.createGenericChestItem(entityName, genericChestName, localeName, order)
 	local item = table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
 	item.localised_name = {"Generic_Logistic_generic_prefix", {localeName}}
 	item.localised_description = {"Generic_Logistic_generic_logistic_chest_description", {localeName}}
 	item.name = genericChestName
-	item.order = "a[storage]-0" .. Generic_Logistic_Generator._internal.GROUP_COUNT
+	item.order = order
 	item.place_result = genericChestName
 	
 	Generic_Logistic_Generator._internal.generifyIcons(item)
