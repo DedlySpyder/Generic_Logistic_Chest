@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.2
+Date: 24. 12. 2020
+  Changes:
+    - Changed the sort order to be consistent with other mods
+  Bugfixes:
+    - Fixed crash when using the pipette tool on a ghost generic/replacement chest
+---------------------------------------------------------------------------------------------------
 Version: 0.5.1
 Date: 22. 12. 2020
   Hotfixes:
