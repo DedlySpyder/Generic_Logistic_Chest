@@ -4,33 +4,6 @@ Util = {}
 
 Util.MOD_PREFIX = "Generic_Logistic_"
 
-Util._DEBUG_LOG_CACHE = {message="", count=0}
-
-if Config.DEBUG_MODE then
-	Util.debugLog = function(message)
-		if game then
-			local formattedMessage = "[" .. game.tick .. "] " .. message
-			if Util._DEBUG_LOG_CACHE.message == formattedMessage then
-				Util._DEBUG_LOG_CACHE.count = Util._DEBUG_LOG_CACHE.count + 1
-				formattedMessage = "[" .. game.tick .. "][" .. Util._DEBUG_LOG_CACHE.count .. "] " .. message
-			else
-				Util._DEBUG_LOG_CACHE.message = formattedMessage
-				Util._DEBUG_LOG_CACHE.count = 1
-			end
-			
-			for _, player in pairs(game.players) do
-				if player and player.valid then
-					player.print(formattedMessage)
-				end
-			end
-		else
-			log(message)
-		end
-	end
-else
-	Util.debugLog = function(m) end
-end
-
 -- Only for use in the data stage
 Util.dumpLogisticChests = function()
 	if data and data.raw then
