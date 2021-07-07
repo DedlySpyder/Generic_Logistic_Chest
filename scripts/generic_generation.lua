@@ -1,4 +1,5 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
+local Math = require("__DedLib__/modules/math")
 
 require("scripts.util")
 
@@ -138,7 +139,7 @@ function Generic_Logistic_Generator._internal.generifySprite(entity, newLayerFun
 	end
 	
 	local firstLayer = sprite.layers[1]
-	local oldSpriteSize = Util.mathMin({firstLayer.height, firstLayer.width, firstLayer.size})
+	local oldSpriteSize = Math.min(firstLayer.height, firstLayer.width, firstLayer.size)
 	table.insert(sprite.layers, newLayerFunc(oldSpriteSize))
 	
 	if entity.animation then

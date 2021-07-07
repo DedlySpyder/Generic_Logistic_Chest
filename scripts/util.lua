@@ -19,26 +19,6 @@ Util.dumpLogisticChests = function()
 end
 
 
-function Util.mathMin(nums)
-	local t = {}
-	for _, num in ipairs(nums) do
-		if num ~= nil then
-			table.insert(t, num)
-		end
-	end
-	return math.min(unpack(t))
-end
-
-function Util.mathMax(nums)
-	local t = {}
-	for _, num in ipairs(nums) do
-		if num ~= nil then
-			table.insert(t, num)
-		end
-	end
-	return math.max(unpack(t))
-end
-
 function Util.getAbsolutePosition(surface, position)
 	return surface.name .. "_" ..position.x .. "_" .. position.y
 end
