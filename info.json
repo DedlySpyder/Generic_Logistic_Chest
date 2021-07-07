@@ -8,6 +8,7 @@
   "description": "Allows the player to make a special chest that can be turned into any of the base game logistic chests.",
   "dependencies" : [
 	"base >= 1.1",
+	"DedLib >= 0.0.2",
 	"? Warehousing >= 0.3.0",
 	"? boblogistics >= 1.0.0"
   ],

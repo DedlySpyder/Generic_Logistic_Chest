@@ -1,3 +1,5 @@
+local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
+
 require("util")
 
 ChestGroups = {}
@@ -12,14 +14,15 @@ ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST = nil
 
 -- Returns the chest group and whether it should be cached or not
 function ChestGroups.getGroups()
-	Util.debugLog("Looking up chest groups")
+	Logger:trace("Looking up chest groups")
 	if mods then
 		return Util.Table.filter(ChestGroups._RAW, function(group)
 			if mods[group.mod] then
-				Util.debugLog("Found group for " .. group.name .. " prerequisite mod " .. group.mod .. " enabled")
+				Logger:info("Found group for %s prerequisite mod %s enabled", group.name, group.mod)
 				return true
 			else
-				Util.debugLog("Skipping group for " .. group.name .. " prerequisite mod " .. group.mod .. " disabled")
+				Logger:info("Skipping group for %s prerequisite mod %s disabled", group.name, group.mod)
+				return false
 			end
 		end), true
 	elseif game then
@@ -27,7 +30,7 @@ function ChestGroups.getGroups()
 			return game.active_mods[group.mod]
 		end), true
 	else
-		Util.debugLog("WARN: Could not find mods or game, returning all chest groups")
+		Logger:warn("Could not find active mod list, returning all chest groups")
 		return ChestGroups._RAW, false
 	end
 end
@@ -35,7 +38,7 @@ end
 -- Returns a map of generic chest -> replacement chest
 function ChestGroups.getGenericToReplacementMapping()
 	if not ChestGroups._cache.GENERIC_TO_REPLACEMENT then
-		Util.debugLog("No cache found for generic to replacement mapping, generating now")
+		Logger:info("No cache found for generic to replacement mapping, generating now")
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
@@ -44,10 +47,12 @@ function ChestGroups.getGenericToReplacementMapping()
 		end
 		
 		if not cache then
-			Util.debugLog("Skipping cache setting")
+			Logger:info("Skipping caching...")
 			return mapping, false
 		end
 		ChestGroups._cache.GENERIC_TO_REPLACEMENT = mapping
+		Logger:debug("Cached generic to replacement mapping")
+		Logger:trace(mapping)
 	end
 	return ChestGroups._cache.GENERIC_TO_REPLACEMENT, true
 end
@@ -55,7 +60,7 @@ end
 -- Returns a map of replacement chest -> generic chest
 function ChestGroups.getReplacementToGenericMapping()
 	if not ChestGroups._cache.REPLACEMENT_TO_GENERIC then
-		Util.debugLog("No cache found for replacement to generic mapping, generating now")
+		Logger:info("No cache found for replacement to generic mapping, generating now")
 		local genericMapping, cache = ChestGroups.getGenericToReplacementMapping()
 		local mapping = {}
 		for generic, replacements in pairs(genericMapping) do
@@ -65,10 +70,12 @@ function ChestGroups.getReplacementToGenericMapping()
 		end
 		
 		if not cache then
-			Util.debugLog("Skipping cache setting")
+			Logger:info("Skipping caching...")
 			return mapping
 		end
 		ChestGroups._cache.REPLACEMENT_TO_GENERIC = mapping
+		Logger:debug("Cached replacement to generic mapping")
+		Logger:trace(mapping)
 	end
 	return ChestGroups._cache.REPLACEMENT_TO_GENERIC
 end
@@ -76,7 +83,7 @@ end
 -- Returns a map of chest -> chest group (map of name -> true)
 function ChestGroups.getFullGroupsMapping()
 	if not ChestGroups._cache.FULL_GROUPING then
-		Util.debugLog("No cache found for full groups mapping, generating now")
+		Logger:info("No cache found for full groups mapping, generating now")
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
@@ -92,10 +99,12 @@ function ChestGroups.getFullGroupsMapping()
 		end
 		
 		if not cache then
-			Util.debugLog("Skipping cache setting")
+			Logger:info("Skipping caching...")
 			return mapping, false
 		end
 		ChestGroups._cache.FULL_GROUPING = mapping
+		Logger:debug("Cached full groups mapping")
+		Logger:trace(mapping)
 	end
 	return ChestGroups._cache.FULL_GROUPING, true
 end
@@ -103,7 +112,7 @@ end
 -- Returns a map of chest -> chest group (list of chests)
 function ChestGroups.getFullGroupsListMapping()
 	if not ChestGroups._cache.FULL_GROUPING_LIST then
-		Util.debugLog("No cache found for full groups list mapping, generating now")
+		Logger:info("No cache found for full groups list mapping, generating now")
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
@@ -119,10 +128,12 @@ function ChestGroups.getFullGroupsListMapping()
 		end
 		
 		if not cache then
-			Util.debugLog("Skipping cache setting")
+			Logger:info("Skipping caching...")
 			return mapping, false
 		end
 		ChestGroups._cache.FULL_GROUPING_LIST = mapping
+		Logger:debug("Cached full groups list mapping")
+		Logger:trace(mapping)
 	end
 	return ChestGroups._cache.FULL_GROUPING_LIST
 end
@@ -130,7 +141,7 @@ end
 -- Returns a map of chest -> {map of chest names (including originals) -> generic chest name version}
 function ChestGroups.getFullGroupsWithOriginalsMapping()
 	if not ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS then
-		Util.debugLog("No cache found for full grouping with originals mapping, generating now")
+		Logger:info("No cache found for full grouping with originals mapping, generating now")
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
@@ -152,10 +163,12 @@ function ChestGroups.getFullGroupsWithOriginalsMapping()
 		end
 		
 		if not cache then
-			Util.debugLog("Skipping cache setting")
+			Logger:info("Skipping caching...")
 			return mapping
 		end
 		ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS = mapping
+		Logger:debug("Cached full grouping with originals mapping")
+		Logger:trace(mapping)
 	end
 	return ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS
 end
@@ -163,7 +176,7 @@ end
 -- Returns a map of chest -> chest group (list of chests) (including originals)
 function ChestGroups.getFullGroupsWithOriginalsListMapping()
 	if not ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST then
-		Util.debugLog("No cache found for full grouping with originals list mapping, generating now")
+		Logger:info("No cache found for full grouping with originals list mapping, generating now")
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
@@ -179,10 +192,12 @@ function ChestGroups.getFullGroupsWithOriginalsListMapping()
 		end
 		
 		if not cache then
-			Util.debugLog("Skipping cache setting")
+			Logger:info("Skipping caching...")
 			return mapping
 		end
 		ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST = mapping
+		Logger:debug("Cached full grouping with originals list mapping")
+		Logger:trace(mapping)
 	end
 	return ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST
 end

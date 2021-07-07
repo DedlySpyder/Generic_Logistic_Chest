@@ -1,3 +1,5 @@
+local Logger = require("__DedLib__/modules/logger").create()
+
 require("util")
 
 
@@ -7,6 +9,7 @@ Migrations.MOD_NAME = "Generic_Logistic_Chest"
 function Migrations.handle(data)
 	if data.mod_changes and data.mod_changes[Migrations.MOD_NAME] then
 		local oldVersion = data.mod_changes[Migrations.MOD_NAME].old_version
+		Logger:info("Migrating from mod version %s", oldVersion)
 		if oldVersion then
 			if Migrations.versionCompare(oldVersion, "0.3.0") then
 				Migrations.to_0_3_0()
@@ -49,7 +52,7 @@ function Migrations.versionCompare(oldVersion, newVersion)
 end
 
 function Migrations.unlockGenericRecipes()
-	Util.debugLog("Unlocking generic recipes")
+	Logger:info("Unlocking generic recipes")
 	local generics = ChestGroups.getGenericToReplacementMapping()
 	local recipes = game.recipe_prototypes
 	for _, techPrototype in pairs(game.technology_prototypes) do

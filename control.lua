@@ -1,3 +1,5 @@
+local Logger = require("__DedLib__/modules/logger").create()
+
 require("scripts.actions")
 require("scripts.chest_groups")
 require("scripts.config")
@@ -32,8 +34,8 @@ function on_pre_entity_placed(event)
 					-- Exit fast replace if the old chest is a replacement, this allows for the generic to actually get built and the UI drawn
 					-- Drag building triggers this constantly, so needed to introduce a slight lag to it. Otherwise, the normal chest gets replaced then the next tick the replacement turns into a generic
 					if replacementName == name and game.tick > lastEvent + Config.PLAYER_FAST_REPLACE_LAG then return end
-					
-					Util.debugLog("Saving " .. replacementName .." entity on pre placed for " .. player.name)
+
+					Logger:info("Saving %s entity on pre placed for %s", replacementName, player)
 					Storage.PlayerFastReplace.add(player, replacementName, entity)
 					return
 				end
@@ -70,7 +72,7 @@ function on_entity_placed(event)
 		if selection then
 			local chestStack = player.get_main_inventory().find_item_stack(generic)
 			if chestStack then
-				Util.debugLog("Refilling cursor for " .. player.name .. " with " .. selection)
+				Logger:info("Refilling cursor for %s with %s", player, selection)
 				chestStack.set_stack({name = selection, count = chestStack.count})
 				player.cursor_stack.swap_stack(chestStack)
 			end
@@ -88,7 +90,7 @@ function on_entity_placed(event)
 			
 			-- Any orignal/generic/replacement chest under the ghost should be deconstructed, to handle undo scenarios
 			for _, replacement in ipairs(foundReplacements) do
-				Util.debugLog("Manually marking " .. replacement.name .. " at " .. serpent.line(position) .. " for deconstruction")
+				Logger:info("Manually marking %s for deconstruction", replacement)
 				replacement.order_deconstruction(force, player)
 			end
 			return
@@ -126,8 +128,8 @@ script.on_event(defines.events.on_entity_died, on_entity_destroyed)
 
 function on_gui_click(event)
 	local elementName = event.element.name
-	Util.debugLog(elementName .. " clicked")
-	
+	Logger:info(elementName .. " clicked")
+
 	-- Find the UI prefix (for this mod)
 	local modSubString = string.sub(elementName, 1, #Util.MOD_PREFIX)
 	if modSubString == Util.MOD_PREFIX then
@@ -173,7 +175,7 @@ function on_player_cursor_stack_changed(event)
 				local chestStackName = chestStack.name
 				local generic = ChestGroups.getGenericFromReplacement(chestStackName)
 				if generic then
-					Util.debugLog("Resetting " .. chestStackName .. " to " .. generic .. " for " .. player.name)
+					Logger:info("Resetting %s to generic %s for %s", chestStackName, generic, player)
 					chestStack.set_stack({name = generic, count = chestStack.count})
 					Storage.PlayerSelection.remove(player)
 				end
@@ -193,7 +195,7 @@ function on_player_copied(event)
 		local nameMapping = ChestGroups.getFullGroupWithOriginals(entityName)
 		if nameMapping then
 			local sourceName = nameMapping[entityName]
-			Util.debugLog("Copying chest " .. entityName .. " as " .. sourceName .. " for " .. player.name)
+			Logger:info("Copying chest %s as %s for %s", entity, sourceName, player)
 			Storage.PlayerCopyData.add(player, sourceName)
 		else
 			Storage.PlayerCopyData.remove(player)
@@ -229,16 +231,16 @@ function on_player_pasted(event)
 		local chestGroup = ChestGroups.getFullGroup(target.name)
 		if chestGroup then
 			local targetName = target.name
-			Util.debugLog("Target (" .. targetName .. ") of paste by " .. player.name .. " is a generic chest")
-			
+			Logger:info("Target %s of paste by %s is a generic chest", targetName, player)
+
 			local sourceName = Storage.PlayerCopyData.get(player)
 			if chestGroup[sourceName] then
 				if targetName == sourceName then
-					Util.debugLog("Source chest is the same as target chest, skipping paste")
+					Logger:warn("Source chest is the same as target chest, skipping paste...")
 					return
 				end
-				
-				Util.debugLog("Pasting chest " .. sourceName .. " onto chest " .. target.name)
+
+				Logger:info("Pasting chest %s onto chest %s", sourceName, target)
 				local newChest = Actions.switchChest(target, sourceName, player)
 				
 				local replacements = ChestGroups.getReplacementsFromGeneric(sourceName)
@@ -322,16 +324,16 @@ function build_on_select_scroll(scrollDistance)
 					
 					local newChestName = chestGroup[newPosition]
 					if isGhost then
-						Util.debugLog("Scrolling ghost chest from " .. cursorChestName .. " to " .. newChestName .. " for " .. player.name)
+						Logger:info("Scrolling ghost chest from %s to %s for %s", cursorChestName, newChestName, player)
 						player.cursor_ghost = newChestName
 					
 					else
-						Util.debugLog("Scrolling chest from " .. cursorChestName .. " to " .. newChestName .. " for " .. player.name)
+						Logger:info("Scrolling chest from %s to %s for %s", cursorChestName, newChestName, player)
 						cursorStack.set_stack({name = newChestName, count = count})
 						Storage.PlayerSelection.add(player, newChestName)
 					end
 				else
-					Util.debugLog("ERROR: Did not find chest " .. cursorChestName .. " in chestGroup " .. serpent.line(chestGroup))
+					Logger:error("Did not find chest %s in chestGroup %s", cursorChestName, chestGroup)
 				end
 			end
 		end

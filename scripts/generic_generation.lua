@@ -1,3 +1,5 @@
+local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
+
 require("scripts.util")
 
 Generic_Logistic_Generator = {}
@@ -20,13 +22,14 @@ end
 -- This should be called after all groups are added
 -- Though it will clear the current groups in case it is used multiple times, it will cause longer game load times
 function Generic_Logistic_Generator.generate()
+	Logger:trace("Generating generic logistic prototypes...")
 	Generic_Logistic_Generator._cache.cacheAllPrototypes()
 	
 	for name, data in pairs(Generic_Logistic_Generator._groups) do
-		Util.debugLog("Generating prototypes for generic group " .. name)
 		local success, msg = pcall(Generic_Logistic_Generator.generateGroup, name, data)
 		if not success then
 			Util.dumpLogisticChests()
+			Logger:fatal("Failed to generate logistic chest for group %s: %s", name, data)
 			for _, chest in ipairs(data.replacements) do
 				if not Generic_Logistic_Generator._cache.ENTITY_CACHE[chest] then
 					error('Failed to generate generic logistic chest "' .. chest .. '" for mod "' .. data.mod .. '". Please report this error to the mod portal with the factorio-current.log')
@@ -35,6 +38,7 @@ function Generic_Logistic_Generator.generate()
 			error('Failed to generate generic logistic chest(s) for mod "' .. data.mod .. '". Please report this error to the mod portal with the factorio-current.log\n' .. msg)
 		end
 	end
+	-- Logger:trace_block("Adding prototypes: %s", Generic_Logistic_Generator._internal.NEW_PROTOTYPES)
 	data:extend(Generic_Logistic_Generator._internal.NEW_PROTOTYPES)
 	
 	Generic_Logistic_Generator.createTempChest(Generic_Logistic_Generator._internal.LARGEST_SIZE)
@@ -44,6 +48,7 @@ function Generic_Logistic_Generator.generate()
 end
 
 function Generic_Logistic_Generator.generateGroup(name, data)
+	Logger:info("Generating prototypes for generic group %s", name)
 	local genericName = Util.MOD_PREFIX .. name
 	local localeName = data.localeName
 	local genericEntityBase = data.generic
@@ -52,8 +57,8 @@ function Generic_Logistic_Generator.generateGroup(name, data)
 	table.insert(baseEntities, genericEntityBase)
 	local tech = Generic_Logistic_Generator._internal.choseLatestTech(baseEntities)
 	local genericOrder = Generic_Logistic_Generator._internal.calculateGenericOrder(baseEntities)
-	
-	Util.debugLog("Generic chest name: " .. genericName)
+
+	Logger:info("Generic chest name: %s", genericName)
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName, genericOrder))
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech))
@@ -64,7 +69,7 @@ function Generic_Logistic_Generator.generateGroup(name, data)
 	end
 	
 	for _, replacement in ipairs(data.replacements) do
-		Util.debugLog("Generating replacement prototypes for " .. replacement)
+		Logger:info("Generating replacement prototypes for %s", replacement)
 		table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createReplacementItem(replacement))
 		table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createReplacementEntity(replacement, genericName))
 	end
@@ -73,7 +78,7 @@ function Generic_Logistic_Generator.generateGroup(name, data)
 end
 
 function Generic_Logistic_Generator.createTempChest(size)
-	Util.debugLog("Creating temp chest of size " .. size)
+	Logger:info("Creating temp chest of size %s", size)
 	data:extend({{
 		type = "container",
 		name = Util.MOD_PREFIX .. "temp",
@@ -311,6 +316,7 @@ Generic_Logistic_Generator._cache.clear() -- Initialize the caches
 
 
 function Generic_Logistic_Generator._cache.cacheAllPrototypes()
+	Logger:trace("Caching relevant prototypes...")
 	local entityNames = {}
 	for _, group in pairs(Generic_Logistic_Generator._groups) do
 		entityNames[group.generic] = true
@@ -318,9 +324,8 @@ function Generic_Logistic_Generator._cache.cacheAllPrototypes()
 			entityNames[replacement] = true
 		end
 	end
-	
-	Util.debugLog("Caching the following prototypes:")
-	Util.debugLog(serpent.block(entityNames)) 
+
+	Logger:trace_block("Caching the following prototypes: %s", entityNames)
 	Generic_Logistic_Generator._cache.cacheEntities(entityNames)
 	Generic_Logistic_Generator._cache.cacheItems()
 	Generic_Logistic_Generator._cache.cacheRecipes()
@@ -331,29 +336,29 @@ end
 function Generic_Logistic_Generator._cache.cacheEntities(entityNames)
 	for name, prototype in pairs(data.raw["logistic-container"]) do
 		if entityNames[name] then
-			Util.debugLog("Caching entity " .. name)
+			Logger:debug("Caching entity %s", name)
 			Generic_Logistic_Generator._cache.ENTITY_CACHE[name] = prototype
 		end
 	end
 end
 
 function Generic_Logistic_Generator._cache.cacheItems()
-	for _, item in pairs(data.raw["item"]) do
+	for name, item in pairs(data.raw["item"]) do
 		local placeResult = item.place_result
 		if placeResult and Generic_Logistic_Generator._cache.ENTITY_CACHE[placeResult] then
-			Util.debugLog("Caching item " .. item.name)
-			Generic_Logistic_Generator._cache.ITEM_CACHE[item.name] = true
+			Logger:debug("Caching item %s", name)
+			Generic_Logistic_Generator._cache.ITEM_CACHE[name] = true
 			Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[placeResult] = item
 		end
 	end
 end
 
 function Generic_Logistic_Generator._cache.cacheRecipes()
-	for _, recipe in pairs(data.raw["recipe"]) do
+	for name, recipe in pairs(data.raw["recipe"]) do
 		local result = recipe.result
 		if result and Generic_Logistic_Generator._cache.ITEM_CACHE[result] then
-			Util.debugLog("Caching recipe " .. recipe.name)
-			Generic_Logistic_Generator._cache.RECIPE_CACHE[recipe.name] = true
+			Logger:debug("Caching recipe %s", name)
+			Generic_Logistic_Generator._cache.RECIPE_CACHE[name] = true --TODO - make sure this change is still good
 			Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[result] = recipe
 		end
 	end
@@ -361,10 +366,11 @@ end
 
 
 function Generic_Logistic_Generator._cache.cacheTechnologies()
-	for _, tech in pairs(data.raw["technology"]) do
+	for name, tech in pairs(data.raw["technology"]) do
 		if tech.effects then
 			for _, effect in ipairs(tech.effects) do
 				if effect.type == "unlock-recipe" and Generic_Logistic_Generator._cache.RECIPE_CACHE[effect.recipe] then
+					Logger:debug("Caching technology %s", name)
 					Generic_Logistic_Generator._cache.TECH_CACHE[effect.recipe] = tech
 				end
 			end

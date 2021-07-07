@@ -1,8 +1,11 @@
+local LoggerLib = require("__DedLib__/modules/logger")
+
 require("storage")
 require("util")
 
 UI = {}
 UI.Selection = {}
+UI.Selection._LOGGER = LoggerLib.create("Selection")
 
 UI.Selection.FRAME_NAME = Util.MOD_PREFIX .. "selection_frame"
 UI.Selection.BUTTON_PREFIX_DIFF = "button_"
@@ -15,8 +18,8 @@ function UI.Selection.draw(player, replacements, chestEntity)
 	Storage.PlayerUiOpen.add(player, chestEntity)
 	
 	if player and player.valid and not UI.Selection.isOpen(player) then
-		Util.debugLog("Drawing selection UI for " .. player.name)
-		
+		UI.Selection._LOGGER:debug("Drawing selection UI for %s", player)
+
 		-- The frame to hold everything
 		local selectionGUI = player.gui.center.add{type="frame", name=UI.Selection.FRAME_NAME, direction="vertical", caption={"Generic_Logistic_select_chest_ui_title"}}
 		
@@ -38,14 +41,14 @@ function UI.Selection.draw(player, replacements, chestEntity)
 		selectionGUI.add{type="button", name=UI.Selection.CLOSE_BUTTON, caption={"Generic_Logistic_select_chest_ui_close"}}
 		return true
 	end
-	
-	Util.debugLog("Could not draw selection UI for " .. player.name)
+
+	UI.Selection._LOGGER:debug("Selection UI already exists for %s", player)
 	return false
 end
 
 function UI.Selection.destroy(player)
 	if player and player.valid and UI.Selection.isOpen(player) then
-		Util.debugLog("Destroying selection UI for " .. player.name)
+		UI.Selection._LOGGER:debug("Destroying selection UI for %s", player)
 		player.gui.center[UI.Selection.FRAME_NAME].destroy()
 	end
 end
