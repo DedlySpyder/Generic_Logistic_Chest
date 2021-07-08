@@ -1,4 +1,5 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
+local Table = require("__DedLib__/modules/table")
 
 require("util")
 
@@ -16,7 +17,7 @@ ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST = nil
 function ChestGroups.getGroups()
 	Logger:trace("Looking up chest groups")
 	if mods then
-		return Util.Table.filter(ChestGroups._RAW, function(group)
+		return Table.filter(ChestGroups._RAW, function(group)
 			if mods[group.mod] then
 				Logger:info("Found group for %s prerequisite mod %s enabled", group.name, group.mod)
 				return true
@@ -26,7 +27,7 @@ function ChestGroups.getGroups()
 			end
 		end), true
 	elseif game then
-		return Util.Table.filter(ChestGroups._RAW, function(group)
+		return Table.filter(ChestGroups._RAW, function(group)
 			return game.active_mods[group.mod]
 		end), true
 	else
@@ -42,7 +43,7 @@ function ChestGroups.getGenericToReplacementMapping()
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
-			local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			local replacements = Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
 			mapping[Util.MOD_PREFIX .. group.name] = replacements
 		end
 		
@@ -88,7 +89,7 @@ function ChestGroups.getFullGroupsMapping()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
 			local finalGroup = {[Util.MOD_PREFIX .. group.name] = true}
-			local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			local replacements = Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
 			for _, replacement in ipairs(replacements) do
 				finalGroup[replacement] = true
 			end
@@ -117,7 +118,7 @@ function ChestGroups.getFullGroupsListMapping()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
 			local finalGroup = {Util.MOD_PREFIX .. group.name}
-			local replacements = Util.Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			local replacements = Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
 			for _, replacement in ipairs(replacements) do
 				table.insert(finalGroup, replacement)
 			end
@@ -152,7 +153,7 @@ function ChestGroups.getFullGroupsWithOriginalsMapping()
 				finalGroup[replacement] = Util.MOD_PREFIX .. replacement
 			end
 			
-			local replacements = Util.Table.map(orignalReplacements, function(r) return Util.MOD_PREFIX .. r end)
+			local replacements = Table.map(orignalReplacements, function(r) return Util.MOD_PREFIX .. r end)
 			for _, replacement in ipairs(replacements) do
 				finalGroup[replacement] = replacement
 			end

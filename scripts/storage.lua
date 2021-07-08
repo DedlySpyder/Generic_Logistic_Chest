@@ -1,5 +1,6 @@
 local LoggerLib = require("__DedLib__/modules/logger")
 local Logger = LoggerLib.create("Main")
+local Table = require("__DedLib__/modules/table")
 
 require("config")
 require("util")
@@ -73,7 +74,7 @@ function Storage.PlayerUiOpen.removeChest(entity)
 	Storage.PlayerUiOpen._LOGGER:debug("Removing chest data for %s", entity)
 	for playerIndex, chests in pairs(global.playerUiOpen) do
 		local oldLength = #chests
-		local newChests = Util.Table.filter(chests, function(chest) return chest ~= entity end)
+		local newChests = Table.filter(chests, function(chest) return chest ~= entity end)
 		global.playerUiOpen[playerIndex] = newChests
 		
 		if #newChests == 0 and oldLength > 0 then

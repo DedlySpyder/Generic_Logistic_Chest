@@ -28,38 +28,3 @@ Util.Player = {}
 function Util.Player.isCursorEmpty(player)
 	return not player.cursor_stack or not player.cursor_stack.valid_for_read
 end
-
-
-Util.Table = {}
-
--- Filter either a table or an array, if the function returns true then the value will stay
-function Util.Table.filter(tbl, func)
-	local newTable = {}
-	local isArr = #tbl > 0
-	for k, v in pairs(tbl) do
-		if func(v) then
-			if isArr then
-				table.insert(newTable, v)
-			else
-				newTable[k] = v
-			end
-		end
-	end
-	return newTable
-end
-
-function Util.Table.map(tbl, func)
-	local newTable = {}
-	local isArr = #tbl > 0
-	for k, v in pairs(tbl) do
-		if isArr then
-			local newValue = func(v)
-			if newValue then
-				table.insert(newTable, newValue)
-			end
-		else
-			newTable[k] = func(v)
-		end
-	end
-	return newTable
-end

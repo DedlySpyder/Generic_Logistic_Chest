@@ -1,4 +1,5 @@
 local Logger = require("__DedLib__/modules/logger").create()
+local Table = require("__DedLib__/modules/table")
 
 require("util")
 
@@ -78,7 +79,7 @@ end
 
 function Migrations.to_0_3_0()
 	global.playerUiOpen = global.genericChestPlayerData
-	global.chestData = Util.Table.map(global.genericChestChestData or {}, function(data)
+	global.chestData = Table.map(global.genericChestChestData or {}, function(data)
 		local ghost = data.ghost
 		if ghost and ghost.valid then
 			local storageFilter = nil
