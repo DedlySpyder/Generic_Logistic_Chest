@@ -22,9 +22,3 @@ end
 function Util.getAbsolutePosition(surface, position)
 	return surface.name .. "_" ..position.x .. "_" .. position.y
 end
-
-
-Util.Player = {}
-function Util.Player.isCursorEmpty(player)
-	return not player.cursor_stack or not player.cursor_stack.valid_for_read
-end
