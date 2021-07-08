@@ -7,14 +7,16 @@ Util.MOD_PREFIX = "Generic_Logistic_"
 -- Only for use in the data stage
 Util.dumpLogisticChests = function()
 	if data and data.raw then
-		log("Listing all logistic containers: ")
-		for name, prototype in pairs(data.raw["logistic-container"]) do
-			log("  " .. name)
+		local chests = {}
+		for name, _ in pairs(data.raw["logistic-container"]) do
 			local recipe = data.raw["recipe"][name]
 			if recipe and recipe.ingredients then
-				log("    " .. serpent.line(recipe.ingredients))
+				chests[name] = recipe.ingredients
+			else
+				chests[name] = recipe
 			end
 		end
+		return chests
 	end
 end
 

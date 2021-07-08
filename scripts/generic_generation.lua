@@ -29,8 +29,8 @@ function Generic_Logistic_Generator.generate()
 	for name, data in pairs(Generic_Logistic_Generator._groups) do
 		local success, msg = pcall(Generic_Logistic_Generator.generateGroup, name, data)
 		if not success then
-			Util.dumpLogisticChests()
 			Logger:fatal("Failed to generate logistic chest for group %s: %s", name, data)
+			Logger:fatal_block(Util.dumpLogisticChests())
 			for _, chest in ipairs(data.replacements) do
 				if not Generic_Logistic_Generator._cache.ENTITY_CACHE[chest] then
 					error('Failed to generate generic logistic chest "' .. chest .. '" for mod "' .. data.mod .. '". Please report this error to the mod portal with the factorio-current.log')
