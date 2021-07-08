@@ -68,7 +68,7 @@ function on_entity_placed(event)
 	
 	-- If the player just placed a replacement chest, and their cursor is empty, try to fill it with generics from their inventory
 	local generic = ChestGroups.getGenericFromReplacement(entityName)
-	if generic and Player.isCursorEmpty(player) then
+	if generic and Player.is_cursor_empty(player) then
 		local selection = Storage.PlayerSelection.get(player)
 		if selection then
 			local chestStack = player.get_main_inventory().find_item_stack(generic)
@@ -168,7 +168,7 @@ script.on_event(defines.events.on_gui_click, on_gui_click)
 
 function on_player_cursor_stack_changed(event)
 	local player = game.players[event.player_index]
-	if Player.isCursorEmpty(player) then
+	if Player.is_cursor_empty(player) then
 		local selection = Storage.PlayerSelection.get(player)
 		if selection then
 			local chestStack = player.get_main_inventory().find_item_stack(selection)
