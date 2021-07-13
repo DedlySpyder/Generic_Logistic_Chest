@@ -163,7 +163,7 @@ function Storage.PlayerFastReplaceEvents.add(player, position)
 end
 
 function Storage.PlayerFastReplaceEvents.get(player, position)
-	Storage.PlayerFastReplace._LOGGER:debug("Removing event data for %s at %s", player, position)
+	Storage.PlayerFastReplace._LOGGER:debug("Getting event data for %s at %s", player, position)
 	local playerData = global.playerFastReplaceEvents[player.index]
 	if playerData then
 		local absolutePosition = Util.getAbsolutePosition(player.surface, position)

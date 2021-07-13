@@ -25,18 +25,24 @@ function on_pre_entity_placed(event)
 	if not event.shift_build then
 		local entities = player.surface.find_entities_filtered{position=position, force=force}
 		if #entities > 0 then
+			Logger:debug("Entity pre build on top of other entities")
 			for _, entity in ipairs(entities) do
 				local name = entity.name
 				local fullGroup = ChestGroups.getFullGroupWithOriginals(name)
+				Logger:debug("Checking if found entity %s is a generic related entity", entity)
 				if fullGroup then
 					local replacementName = fullGroup[name]
 					local lastEvent = Storage.PlayerFastReplaceEvents.get(player, position)
+					Logger:info("Entity %s is generic related, replacement for it is %s. Last event for player is %s", entity, replacementName, lastEvent)
 					
 					-- Exit fast replace if the old chest is a replacement, this allows for the generic to actually get built and the UI drawn
 					-- Drag building triggers this constantly, so needed to introduce a slight lag to it. Otherwise, the normal chest gets replaced then the next tick the replacement turns into a generic
-					if replacementName == name and game.tick > lastEvent + Config.PLAYER_FAST_REPLACE_LAG then return end
+					if replacementName == name and game.tick > lastEvent + Config.PLAYER_FAST_REPLACE_LAG then
+						Logger:debug("Too recent replacement fast replace, exiting...")
+						return
+					end
 
-					Logger:info("Saving %s entity on pre placed for %s", replacementName, player)
+					Logger:info("Saving %s entity on pre build for %s", replacementName, player)
 					Storage.PlayerFastReplace.add(player, replacementName, entity)
 					return
 				end
@@ -57,10 +63,12 @@ function on_entity_placed(event)
 	if replacements then
 		local fastReplaceChestData = Storage.PlayerFastReplace.get(player)
 		if fastReplaceChestData and fastReplaceChestData.replacementChestName ~= entityName then
+			Logger:info("Generic chest placed %s as fast replace to %s", entity, fastReplaceChestData)
 			Storage.PlayerFastReplaceEvents.add(player, entity.position)
 			Actions.switchChestFromChestData(entity, fastReplaceChestData, player)
 			Storage.PlayerFastReplace.remove(player)
 		else
+			Logger:info("Generic chest placed %s", entity)
 			UI.Selection.draw(player, replacements, entity)
 		end
 		return
@@ -69,8 +77,10 @@ function on_entity_placed(event)
 	-- If the player just placed a replacement chest, and their cursor is empty, try to fill it with generics from their inventory
 	local generic = ChestGroups.getGenericFromReplacement(entityName)
 	if generic and Player.is_cursor_empty(player) then
+		Logger:debug("%s placed last replacement %s, attempting to fill cursor from inventory...", player, entityName)
 		local selection = Storage.PlayerSelection.get(player)
 		if selection then
+			Logger:debug("Found player selection %s", selection)
 			local chestStack = player.get_main_inventory().find_item_stack(generic)
 			if chestStack then
 				Logger:info("Refilling cursor for %s with %s", player, selection)
@@ -83,15 +93,18 @@ function on_entity_placed(event)
 	
 	-- Check for a ghost (from blueprints)
 	if entityName == "entity-ghost" then
-		local fullGroupList = ChestGroups.getFullGroupWithOriginalsList(entity.ghost_name)
+		local ghostName = entity.ghost_name
+		local fullGroupList = ChestGroups.getFullGroupWithOriginalsList(ghostName)
 		if fullGroupList then
+			Logger:debug("Ghost %s found for %s", entity, ghostName)
 			local force = entity.force
 			local position = entity.position
 			local foundReplacements = entity.surface.find_entities_filtered{position=position, name=fullGroupList, force=force}
 			
-			-- Any orignal/generic/replacement chest under the ghost should be deconstructed, to handle undo scenarios
+			-- Any original/generic/replacement chest under the ghost should be deconstructed, to handle undo scenarios
+			-- TODO - Factorio 1.2 - Should have undo support to do this better
 			for _, replacement in ipairs(foundReplacements) do
-				Logger:info("Manually marking %s for deconstruction", replacement)
+				Logger:debug("Manually marking %s for deconstruction", replacement)
 				replacement.order_deconstruction(force, player)
 			end
 			return
@@ -99,7 +112,7 @@ function on_entity_placed(event)
 	end
 end
 
-script.on_event(defines.events.on_built_entity, on_entity_placed)
+script.on_event(defines.events.on_built_entity, on_entity_placed) -- TODO - filters? generics, replacements, ghosts
 
 function on_entity_destroyed(event)
 	local entity = event.entity
@@ -107,6 +120,7 @@ function on_entity_destroyed(event)
 	-- If a generic chest is destroyed, check if a player was trying to change it
 	local replacements = ChestGroups.getReplacementsFromGeneric(entity.name)
 	if replacements then
+		Logger:debug("Generic chest %s destroyed", entity)
 		local player = Storage.PlayerUiOpen.removeChest(entity)
 		if player then
 			UI.Selection.destroy(player)
@@ -127,13 +141,13 @@ script.on_event(defines.events.on_robot_pre_mined, on_entity_destroyed)
 script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, build_script_raised_filters())
 script.on_event(defines.events.on_entity_died, on_entity_destroyed)
 
-function on_gui_click(event)
+function on_gui_click(event) -- TODO - cleanup - change UI to use tags?
 	local elementName = event.element.name
-	Logger:info(elementName .. " clicked")
 
 	-- Find the UI prefix (for this mod)
 	local modSubString = string.sub(elementName, 1, #Util.MOD_PREFIX)
 	if modSubString == Util.MOD_PREFIX then
+		Logger:info(elementName .. " clicked")
 		local player = game.players[event.player_index]
 		
 		if elementName == UI.Selection.CLOSE_BUTTON then
@@ -173,6 +187,7 @@ function on_player_cursor_stack_changed(event)
 		if selection then
 			local chestStack = player.get_main_inventory().find_item_stack(selection)
 			if chestStack then
+				Logger:debug("Player returned replacement chest to inventory: %s", chestStack)
 				local chestStackName = chestStack.name
 				local generic = ChestGroups.getGenericFromReplacement(chestStackName)
 				if generic then
@@ -190,6 +205,7 @@ script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_
 function on_player_copied(event)
 	local player = game.players[event.player_index]
 	local entity = player.selected
+	Logger:debug("Custom player copied event for %s copying %s", player, entity)
 	
 	if entity then
 		local entityName = entity.name
@@ -209,6 +225,7 @@ script.on_event("Generic_Logistic_copy_chest", on_player_copied)
 function on_custom_build(event)
 	local player = game.players[event.player_index]
 	local entity = player.selected
+	Logger:debug("Custom player build event for %s building %s", player, entity)
 	
 	-- If a player attempts to build a generic on top of a same generic, the game does not fire an event (because nothing happens)
 	-- So, this will open the UI for them
@@ -227,6 +244,7 @@ script.on_event("Generic_Logistic_build", on_custom_build)
 function on_player_pasted(event)
 	local player = game.players[event.player_index]
 	local target = event.destination
+	Logger:debug("Custom player pasted event for %s pasting %s", player, entity)
 	
 	if target then
 		local chestGroup = ChestGroups.getFullGroup(target.name)
@@ -260,6 +278,7 @@ function on_player_pipette(event)
 	local replacements = ChestGroups.getReplacementsFromGeneric(event.item.name)
 	
 	if replacements then
+		Logger:debug("%s pipette a generic related chest", player)
 		local selectedEntity = player.selected
 		if selectedEntity then
 			local replacementName = selectedEntity.name
@@ -270,9 +289,11 @@ function on_player_pipette(event)
 			local cursorStack = player.cursor_stack
 			if cursorStack and cursorStack.valid_for_read then
 				-- Generic in the player's cursor from pipette
+				Logger:info("Replacing %s for player %s with %s", cursorStack, player, replacementName)
 				cursorStack.set_stack({name = replacementName, count = cursorStack.count})
 			else
 				-- Generic ghost in the player's cursor
+				Logger:info("Replacing cursor ghost for player %s with %s", player, replacementName)
 				player.cursor_ghost = replacementName
 			end
 			Storage.PlayerSelection.add(player, replacementName)
@@ -283,10 +304,13 @@ end
 script.on_event(defines.events.on_player_pipette, on_player_pipette)
 
 function build_on_select_scroll(scrollDistance)
+	local direction = "up" --TODO - DedLib - Use Util.ternary()
+	if scrollDistance < 0 then direction = "down" end
 	return function(event)
 		local player = game.players[event.player_index]
 		local cursorStack = player.cursor_stack
-		
+		Logger:debug("Player %s scrolling %s with %s in cursor", player, direction, cursorStack)
+
 		local cursorChestName, count = nil, nil
 		local isGhost = false
 		if cursorStack and cursorStack.valid and cursorStack.valid_for_read then
@@ -299,37 +323,38 @@ function build_on_select_scroll(scrollDistance)
 				isGhost = true
 			end
 		end
-		
+
 		if cursorChestName then
 			local chestGroup = ChestGroups.getFullGroupList(cursorChestName)
 			if chestGroup then
+				Logger:debug("Cursor is a generic mod entity")
 				local groupCount = #chestGroup
 				local position = 0
-				
+
 				for i = 1, groupCount do
 					if chestGroup[i] == cursorChestName then
 						position = i
 						break
 					end
 				end
-				
+
 				if position > 0 then
 					local newPosition = position + scrollDistance
-					
+
 					-- Loop around the group
 					if newPosition < 1 then
 						newPosition = groupCount
 					elseif newPosition > groupCount then
 						newPosition = 1
 					end
-					
+
 					local newChestName = chestGroup[newPosition]
 					if isGhost then
-						Logger:info("Scrolling ghost chest from %s to %s for %s", cursorChestName, newChestName, player)
+						Logger:info("Scrolling ghost %s chest from %s to %s for %s", direction, cursorChestName, newChestName, player)
 						player.cursor_ghost = newChestName
-					
+
 					else
-						Logger:info("Scrolling chest from %s to %s for %s", cursorChestName, newChestName, player)
+						Logger:info("Scrolling chest %s from %s to %s for %s", direction, cursorChestName, newChestName, player)
 						cursorStack.set_stack({name = newChestName, count = count})
 						Storage.PlayerSelection.add(player, newChestName)
 					end
