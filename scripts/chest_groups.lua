@@ -1,7 +1,7 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
 local Table = require("__DedLib__/modules/table")
 
-require("config")
+local Config = require("config")
 
 ChestGroups = {}
 

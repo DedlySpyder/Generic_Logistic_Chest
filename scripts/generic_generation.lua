@@ -1,8 +1,8 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
 local Math = require("__DedLib__/modules/math")
 
-require("scripts.config")
-local DataUtil = require("scripts.data_util")
+local Config = require("scripts/config")
+local DataUtil = require("scripts/data_util")
 
 Generic_Logistic_Generator = {}
 

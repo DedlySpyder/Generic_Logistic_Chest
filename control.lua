@@ -3,11 +3,10 @@ local Player = require("__DedLib__/modules/player")
 
 require("scripts.actions")
 require("scripts.chest_groups")
-require("scripts.config")
+local Config = require("scripts/config")
 require("scripts.migrations")
 require("scripts.storage")
 require("scripts.ui")
-require("scripts.util")
 
 
 

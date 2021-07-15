@@ -2,8 +2,7 @@ local LoggerLib = require("__DedLib__/modules/logger")
 local Logger = LoggerLib.create("Main")
 local Table = require("__DedLib__/modules/table")
 
-require("config")
-require("util")
+local Config = require("config")
 
 Storage = {}
 

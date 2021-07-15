@@ -1,6 +1,6 @@
 local LoggerLib = require("__DedLib__/modules/logger")
 
-require("config")
+local Config = require("config")
 require("storage")
 
 UI = {}

@@ -1,6 +1,6 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
 
-Config = {}
+local Config = {}
 
 Config.MOD_PREFIX = "Generic_Logistic_"
 Config.DEBUG_MODE = settings.startup["Generic_Logistic_debug_mode"].value
@@ -16,3 +16,5 @@ if settings.global then
 	
 	Config.refresh()
 end
+
+return Config

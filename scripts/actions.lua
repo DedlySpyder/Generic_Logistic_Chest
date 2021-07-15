@@ -1,7 +1,7 @@
 local Logger = require("__DedLib__/modules/logger").create()
 
 require("chest_groups")
-require("config")
+local Config = require("config")
 require("storage")
 
 
