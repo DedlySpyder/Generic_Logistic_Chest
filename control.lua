@@ -10,7 +10,8 @@ require("scripts.ui")
 
 
 
-script.on_init(Storage.init)
+script.on_init(Storage:on_init_wrapped())
+script.on_load(Storage:on_load_wrapped())
 
 script.on_configuration_changed(Migrations.handle)
 
