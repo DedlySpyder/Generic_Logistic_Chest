@@ -1,7 +1,7 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
 local Math = require("__DedLib__/modules/math")
 
-require("scripts.util")
+require("scripts.config")
 
 Generic_Logistic_Generator = {}
 
@@ -50,7 +50,7 @@ end
 
 function Generic_Logistic_Generator.generateGroup(name, data)
 	Logger:info("Generating prototypes for generic group %s", name)
-	local genericName = Util.MOD_PREFIX .. name
+	local genericName = Config.MOD_PREFIX .. name
 	local localeName = data.localeName
 	local genericEntityBase = data.generic
 	
@@ -82,7 +82,7 @@ function Generic_Logistic_Generator.createTempChest(size)
 	Logger:info("Creating temp chest of size %s", size)
 	data:extend({{
 		type = "container",
-		name = Util.MOD_PREFIX .. "temp",
+		name = Config.MOD_PREFIX .. "temp",
 		icon = "__Generic_Logistic_Chest__/graphics/generic_chest_icon.png",
 		icon_size = 64,
 		flags = {"not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
@@ -158,10 +158,10 @@ function Generic_Logistic_Generator._internal.createReplacementItem(entityName)
 	local item =  table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
 	item.localised_name = {"Generic_Logistic_generic_prefix", {"item-name." .. item.name}}
 	item.localised_description = {"item-description." .. item.name}
-	item.name = Util.MOD_PREFIX .. item.name
+	item.name = Config.MOD_PREFIX .. item.name
 	item.order = "zzzzzzzzzzzzzzzzzzzz"
 	item.flags = {"hidden"}
-	item.place_result = Util.MOD_PREFIX .. item.place_result -- This should never exist as an item, but just in case
+	item.place_result = Config.MOD_PREFIX .. item.place_result -- This should never exist as an item, but just in case
 	
 	Generic_Logistic_Generator._internal.generifyIcons(item, true)
 	return item
@@ -171,7 +171,7 @@ function Generic_Logistic_Generator._internal.createReplacementEntity(entityName
 	local entity = table.deepcopy(Generic_Logistic_Generator._cache.ENTITY_CACHE[entityName])
 	entity.localised_name = {"Generic_Logistic_generic_prefix", {"entity-name." .. entity.name}}
 	entity.localised_description = {"entity-description." .. entity.name}
-	entity.name = Util.MOD_PREFIX .. entity.name
+	entity.name = Config.MOD_PREFIX .. entity.name
 	entity.minable.result = genericChestName
 	entity.placeable_by = {
 		item = genericChestName,

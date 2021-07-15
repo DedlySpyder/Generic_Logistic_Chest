@@ -1,8 +1,8 @@
 local Logger = require("__DedLib__/modules/logger").create()
 
 require("chest_groups")
+require("config")
 require("storage")
-require("util")
 
 
 Actions = {}
@@ -24,7 +24,7 @@ function Actions.switchChest(entity, replacementName, player, requestFilters, st
 		Logger:info("Switching chest %s at (%s,%s) on %s with %s", entityName, position.x, position.y, surface, replacementName)
 
 		-- Fast replace can handle moving items and spilling excess, but it will also spill the generic chest, and does so last, so finding it could be hard to judge
-		local tempChest = surface.create_entity{name=Util.MOD_PREFIX .. "temp", position=position, force=force}
+		local tempChest = surface.create_entity{name=Config.MOD_PREFIX .. "temp", position=position, force=force}
 		Actions.swapInventories(entity, tempChest)
 		
 		local newChest

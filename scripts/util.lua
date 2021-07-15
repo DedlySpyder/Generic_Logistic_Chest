@@ -1,8 +1,4 @@
-require("config")
-
 Util = {}
-
-Util.MOD_PREFIX = "Generic_Logistic_"
 
 -- Only for use in the data stage
 Util.dumpLogisticChests = function()

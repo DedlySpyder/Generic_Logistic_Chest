@@ -1,16 +1,16 @@
 local LoggerLib = require("__DedLib__/modules/logger")
 
+require("config")
 require("storage")
-require("util")
 
 UI = {}
 UI.Selection = {}
 UI.Selection._LOGGER = LoggerLib.create("Selection")
 
-UI.Selection.FRAME_NAME = Util.MOD_PREFIX .. "selection_frame"
+UI.Selection.FRAME_NAME = Config.MOD_PREFIX .. "selection_frame"
 UI.Selection.BUTTON_PREFIX_DIFF = "button_"
-UI.Selection.BUTTON_PREFIX = Util.MOD_PREFIX .. UI.Selection.BUTTON_PREFIX_DIFF
-UI.Selection.CLOSE_BUTTON = Util.MOD_PREFIX .. "close"
+UI.Selection.BUTTON_PREFIX = Config.MOD_PREFIX .. UI.Selection.BUTTON_PREFIX_DIFF
+UI.Selection.CLOSE_BUTTON = Config.MOD_PREFIX .. "close"
 
 -- Returns whether the Selection UI was drawn or not
 -- If it was not drawn then the chest should just be considered a normal chest
@@ -28,7 +28,7 @@ function UI.Selection.draw(player, replacements, chestEntity)
 		
 		-- The selection buttons
 		for _, replacement in ipairs(replacements) do
-			local replacementBaseName = string.sub(replacement, #Util.MOD_PREFIX + 1, #replacement)
+			local replacementBaseName = string.sub(replacement, #Config.MOD_PREFIX + 1, #replacement)
 			selectionButtonFlow.add {
 				type="sprite-button",
 				name=UI.Selection.BUTTON_PREFIX .. replacement,

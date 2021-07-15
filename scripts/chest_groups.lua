@@ -1,7 +1,7 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
 local Table = require("__DedLib__/modules/table")
 
-require("util")
+require("config")
 
 ChestGroups = {}
 
@@ -43,8 +43,8 @@ function ChestGroups.getGenericToReplacementMapping()
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
-			local replacements = Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
-			mapping[Util.MOD_PREFIX .. group.name] = replacements
+			local replacements = Table.map(group.replacements, function(r) return Config.MOD_PREFIX .. r end)
+			mapping[Config.MOD_PREFIX .. group.name] = replacements
 		end
 		
 		if not cache then
@@ -88,8 +88,8 @@ function ChestGroups.getFullGroupsMapping()
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
-			local finalGroup = {[Util.MOD_PREFIX .. group.name] = true}
-			local replacements = Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			local finalGroup = {[Config.MOD_PREFIX .. group.name] = true}
+			local replacements = Table.map(group.replacements, function(r) return Config.MOD_PREFIX .. r end)
 			for _, replacement in ipairs(replacements) do
 				finalGroup[replacement] = true
 			end
@@ -117,8 +117,8 @@ function ChestGroups.getFullGroupsListMapping()
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
-			local finalGroup = {Util.MOD_PREFIX .. group.name}
-			local replacements = Table.map(group.replacements, function(r) return Util.MOD_PREFIX .. r end)
+			local finalGroup = {Config.MOD_PREFIX .. group.name}
+			local replacements = Table.map(group.replacements, function(r) return Config.MOD_PREFIX .. r end)
 			for _, replacement in ipairs(replacements) do
 				table.insert(finalGroup, replacement)
 			end
@@ -146,14 +146,14 @@ function ChestGroups.getFullGroupsWithOriginalsMapping()
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
-			local finalGroup = {[Util.MOD_PREFIX .. group.name] = Util.MOD_PREFIX .. group.name}
+			local finalGroup = {[Config.MOD_PREFIX .. group.name] = Config.MOD_PREFIX .. group.name}
 			
 			local orignalReplacements = group.replacements
 			for _, replacement in ipairs(orignalReplacements) do
-				finalGroup[replacement] = Util.MOD_PREFIX .. replacement
+				finalGroup[replacement] = Config.MOD_PREFIX .. replacement
 			end
 			
-			local replacements = Table.map(orignalReplacements, function(r) return Util.MOD_PREFIX .. r end)
+			local replacements = Table.map(orignalReplacements, function(r) return Config.MOD_PREFIX .. r end)
 			for _, replacement in ipairs(replacements) do
 				finalGroup[replacement] = replacement
 			end
@@ -181,12 +181,12 @@ function ChestGroups.getFullGroupsWithOriginalsListMapping()
 		local rawChestGroups, cache = ChestGroups.getGroups()
 		local mapping = {}
 		for _, group in ipairs(rawChestGroups) do
-			local finalGroup = {Util.MOD_PREFIX .. group.name}
-			mapping[Util.MOD_PREFIX .. group.name] = finalGroup
+			local finalGroup = {Config.MOD_PREFIX .. group.name}
+			mapping[Config.MOD_PREFIX .. group.name] = finalGroup
 			for _, replacement in ipairs(group.replacements) do
 				table.insert(finalGroup, replacement)
 				
-				local modReplacement = Util.MOD_PREFIX .. replacement
+				local modReplacement = Config.MOD_PREFIX .. replacement
 				table.insert(finalGroup, modReplacement)
 				mapping[modReplacement] = finalGroup
 			end

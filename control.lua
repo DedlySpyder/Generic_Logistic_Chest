@@ -145,8 +145,8 @@ function on_gui_click(event) -- TODO - cleanup - change UI to use tags?
 	local elementName = event.element.name
 
 	-- Find the UI prefix (for this mod)
-	local modSubString = string.sub(elementName, 1, #Util.MOD_PREFIX)
-	if modSubString == Util.MOD_PREFIX then
+	local modSubString = string.sub(elementName, 1, #Config.MOD_PREFIX)
+	if modSubString == Config.MOD_PREFIX then
 		Logger:info(elementName .. " clicked")
 		local player = game.players[event.player_index]
 		
@@ -155,7 +155,7 @@ function on_gui_click(event) -- TODO - cleanup - change UI to use tags?
 			Storage.PlayerUiOpen.remove(player)
 			
 		else
-			local buttonSubString = string.sub(elementName, #Util.MOD_PREFIX + 1, #UI.Selection.BUTTON_PREFIX)
+			local buttonSubString = string.sub(elementName, #Config.MOD_PREFIX + 1, #UI.Selection.BUTTON_PREFIX)
 			if buttonSubString == UI.Selection.BUTTON_PREFIX_DIFF then
 				local replacementName = string.sub(elementName, #UI.Selection.BUTTON_PREFIX + 1, #elementName)
 				
