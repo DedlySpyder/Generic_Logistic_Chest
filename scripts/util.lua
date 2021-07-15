@@ -19,8 +19,3 @@ Util.dumpLogisticChests = function()
 		return chests
 	end
 end
-
-
-function Util.getAbsolutePosition(surface, position)
-	return surface.name .. "_" ..position.x .. "_" .. position.y
-end

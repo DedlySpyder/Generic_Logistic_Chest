@@ -21,6 +21,10 @@ function Storage.purge()
 	Storage.PlayerFastReplaceEvents.purge()
 end
 
+function Storage.getAbsolutePosition(surface, position)
+	return surface.name .. "_" ..position.x .. "_" .. position.y
+end
+
 function Storage._getRequestFilters(entity)
 	local requestFilters = {}
 	for index=1, entity.request_slot_count do
@@ -152,7 +156,7 @@ end
 Storage.PlayerFastReplaceEvents = {}
 Storage.PlayerFastReplaceEvents._LOGGER = LoggerLib.create("PlayerFastReplaceEvents")
 function Storage.PlayerFastReplaceEvents.add(player, position)
-	local absolutePosition = Util.getAbsolutePosition(player.surface, position)
+	local absolutePosition = Storage.getAbsolutePosition(player.surface, position)
 	Storage.PlayerFastReplace._LOGGER:debug("Adding event data for %s at %s (absolute: %s)", player, position, absolutePosition)
 
 	if not global.playerFastReplaceEvents[player.index] then
@@ -166,7 +170,7 @@ function Storage.PlayerFastReplaceEvents.get(player, position)
 	Storage.PlayerFastReplace._LOGGER:debug("Getting event data for %s at %s", player, position)
 	local playerData = global.playerFastReplaceEvents[player.index]
 	if playerData then
-		local absolutePosition = Util.getAbsolutePosition(player.surface, position)
+		local absolutePosition = Storage.getAbsolutePosition(player.surface, position)
 		return global.playerFastReplaceEvents[player.index][absolutePosition] or game.tick
 	end
 	return game.tick
