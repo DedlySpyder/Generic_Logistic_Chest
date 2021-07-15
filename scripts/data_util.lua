@@ -1,7 +1,7 @@
-Util = {}
+local DataUtil = {}
 
 -- Only for use in the data stage
-Util.dumpLogisticChests = function()
+function DataUtil.dumpLogisticChests()
 	if data and data.raw then
 		local chests = {}
 		for name, _ in pairs(data.raw["logistic-container"]) do
@@ -15,3 +15,5 @@ Util.dumpLogisticChests = function()
 		return chests
 	end
 end
+
+return DataUtil
