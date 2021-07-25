@@ -255,6 +255,12 @@ function Generic_Logistic_Generator._internal.createGenericChestItem(entityName,
 	item.order = order
 	item.place_result = genericChestName
 	
+	if item.flags then
+		table.insert(item.flags, "primary-place-result")
+	else
+		item.flags = {"primary-place-result"}
+	end
+	
 	Generic_Logistic_Generator._internal.generifyIcons(item)
 	return item
 end
