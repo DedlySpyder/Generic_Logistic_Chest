@@ -63,7 +63,7 @@ function Generic_Logistic_Generator.generateGroup(name, data)
 	Logger:info("Generic chest name: %s", genericName)
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestItem(genericEntityBase, genericName, localeName, genericOrder))
 	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestEntity(genericEntityBase, genericName, localeName))
-	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech))
+	table.insert(Generic_Logistic_Generator._internal.NEW_PROTOTYPES, Generic_Logistic_Generator._internal.createGenericChestRecipe(genericEntityBase, genericName, data.ingredients, tech, genericOrder))
 	
 	local size = Generic_Logistic_Generator._cache.ENTITY_CACHE[genericEntityBase].inventory_size
 	if size > Generic_Logistic_Generator._internal.LARGEST_SIZE then
@@ -291,7 +291,7 @@ function Generic_Logistic_Generator._internal.createGenericChestEntity(entityNam
 	return entity
 end
 
-function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityName, genericChestName, ingredients, tech)
+function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityName, genericChestName, ingredients, tech, order)
 	local recipe = table.deepcopy(Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName].name])
 	
 	recipe.name = genericChestName
@@ -300,6 +300,7 @@ function Generic_Logistic_Generator._internal.createGenericChestRecipe(entityNam
 	recipe.results = nil
 	recipe.result = genericChestName
 	recipe.result_count = 1
+	recipe.order = order
 	
 	table.insert(tech.effects, {
 		type = "unlock-recipe",
