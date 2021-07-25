@@ -345,6 +345,34 @@ ChestGroups._RAW = {
 			"aai-warehouse-requester",
 			"aai-warehouse-buffer"
 		}
+	},
+	{
+		mod = "angelsaddons-storage",
+		name = "angels-warehouse",
+		localeName = "Generic_Logistic_angels_warehouse",
+		generic = "angels-warehouse-storage",
+		ingredients = {{"angels-warehouse", 1}, {"processing-unit", 20}},
+		replacements = {
+			"angels-warehouse-passive-provider",
+			"angels-warehouse-active-provider",
+			"angels-warehouse-storage",
+			"angels-warehouse-requester",
+			"angels-warehouse-buffer"
+		}
+	},
+	{
+		mod = "angelsaddons-storage",
+		name = "angels-silo",
+		localeName = "Generic_Logistic_angels_silo",
+		generic = "silo-storage",
+		ingredients = {{"silo", 1}, {"processing-unit", 20}},
+		replacements = {
+			"silo-passive-provider",
+			"silo-active-provider",
+			"silo-storage",
+			"silo-requester",
+			"silo-buffer"
+		}
 	}
 	--[[
 ,

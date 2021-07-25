@@ -11,7 +11,8 @@
     "DedLib >= 0.0.2",
     "? Warehousing >= 0.3.0",
     "? boblogistics >= 1.0.0",
-    "? aai-containers >= 0.0.1"
+    "? aai-containers >= 0.0.1",
+    "? angelsaddons-storage >= 0.0.1"
   ],
   "factorio_version": "1.1"
 }
