@@ -66,11 +66,11 @@ function on_entity_placed(event)
 			Logger:info("Generic chest placed %s as fast replace to %s", entity, fastReplaceChestData)
 			Storage.PlayerFastReplaceEvents.add(player, entity.position)
 			Actions.switchChestFromChestData(entity, fastReplaceChestData, player)
-			Storage.PlayerFastReplace.remove(player)
 		else
 			Logger:info("Generic chest placed %s", entity)
 			UI.Selection.draw(player, replacements, entity)
 		end
+		Storage.PlayerFastReplace.remove(player)
 		return
 	end
 	
