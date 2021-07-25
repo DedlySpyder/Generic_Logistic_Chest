@@ -306,7 +306,7 @@ ChestGroups._RAW = {
 	},
 	{
 		mod = "aai-containers",
-		name = "strongbox-storage",
+		name = "aai-strongbox",
 		localeName = "Generic_Logistic_aai_containers_strongbox",
 		generic = "aai-strongbox-storage",
 		ingredients = {{"aai-strongbox", 1}, {"processing-unit", 4}},
@@ -320,7 +320,7 @@ ChestGroups._RAW = {
 	},
 	{
 		mod = "aai-containers",
-		name = "storehouse-storage",
+		name = "aai-storehouse",
 		localeName = "Generic_Logistic_aai_containers_storehouse",
 		generic = "aai-storehouse-storage",
 		ingredients = {{"aai-storehouse", 1}, {"processing-unit", 10}},
@@ -334,7 +334,7 @@ ChestGroups._RAW = {
 	},
 	{
 		mod = "aai-containers",
-		name = "warehouse-storage",
+		name = "aai-warehouse",
 		localeName = "Generic_Logistic_aai_containers_warehouse",
 		generic = "aai-warehouse-storage",
 		ingredients = {{"aai-warehouse", 1}, {"processing-unit", 20}},
