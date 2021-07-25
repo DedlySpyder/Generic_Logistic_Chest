@@ -223,7 +223,7 @@ script.on_event("Generic_Logistic_copy_chest", on_player_copied)
 function on_custom_build(event)
 	local player = game.players[event.player_index]
 	local entity = player.selected
-	Logger:debug("Custom player build event for %s building %s", player, entity)
+	Logger:debug("Custom player build event for %s old entity <%s> at same position", player, entity)
 	
 	-- If a player attempts to build a generic on top of a same generic, the game does not fire an event (because nothing happens)
 	-- So, this will open the UI for them
