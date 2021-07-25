@@ -303,6 +303,48 @@ ChestGroups._RAW = {
 			"logistic-chest-requester-3",
 			"logistic-chest-buffer-3"
 		}
+	},
+	{
+		mod = "aai-containers",
+		name = "strongbox-storage",
+		localeName = "Generic_Logistic_aai_containers_strongbox",
+		generic = "aai-strongbox-storage",
+		ingredients = {{"aai-strongbox", 1}, {"processing-unit", 4}},
+		replacements = {
+			"aai-strongbox-passive-provider",
+			"aai-strongbox-active-provider",
+			"aai-strongbox-storage",
+			"aai-strongbox-requester",
+			"aai-strongbox-buffer"
+		}
+	},
+	{
+		mod = "aai-containers",
+		name = "storehouse-storage",
+		localeName = "Generic_Logistic_aai_containers_storehouse",
+		generic = "aai-storehouse-storage",
+		ingredients = {{"aai-storehouse", 1}, {"processing-unit", 10}},
+		replacements = {
+			"aai-storehouse-passive-provider",
+			"aai-storehouse-active-provider",
+			"aai-storehouse-storage",
+			"aai-storehouse-requester",
+			"aai-storehouse-buffer"
+		}
+	},
+	{
+		mod = "aai-containers",
+		name = "warehouse-storage",
+		localeName = "Generic_Logistic_aai_containers_warehouse",
+		generic = "aai-warehouse-storage",
+		ingredients = {{"aai-warehouse", 1}, {"processing-unit", 20}},
+		replacements = {
+			"aai-warehouse-passive-provider",
+			"aai-warehouse-active-provider",
+			"aai-warehouse-storage",
+			"aai-warehouse-requester",
+			"aai-warehouse-buffer"
+		}
 	}
 	--[[
 ,
