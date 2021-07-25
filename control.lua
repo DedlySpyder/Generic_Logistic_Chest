@@ -128,18 +128,16 @@ function on_entity_destroyed(event)
 	end
 end
 
-function build_script_raised_filters()
-	local filters = {}
-	for generic, _ in pairs(ChestGroups.getGenericToReplacementMapping()) do
-		table.insert(filters, {filter="name", name=generic})
-	end
-	return filters
+local generic_chest_filters = {}
+for generic, _ in pairs(ChestGroups.getGenericToReplacementMapping()) do
+	table.insert(generic_chest_filters, {filter="name", name=generic})
 end
+Logger:trace_block("Generic Chest Filters: %s", generic_chest_filters)
 
-script.on_event(defines.events.on_pre_player_mined_item, on_entity_destroyed)
-script.on_event(defines.events.on_robot_pre_mined, on_entity_destroyed)
-script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, build_script_raised_filters())
-script.on_event(defines.events.on_entity_died, on_entity_destroyed)
+script.on_event(defines.events.on_pre_player_mined_item, on_entity_destroyed, generic_chest_filters)
+script.on_event(defines.events.on_robot_pre_mined, on_entity_destroyed, generic_chest_filters)
+script.on_event(defines.events.script_raised_destroy, on_entity_destroyed, generic_chest_filters)
+script.on_event(defines.events.on_entity_died, on_entity_destroyed, generic_chest_filters)
 
 function on_gui_click(event) -- TODO - cleanup - change UI to use tags?
 	local elementName = event.element.name
