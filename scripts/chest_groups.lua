@@ -373,6 +373,34 @@ ChestGroups._RAW = {
 			"silo-requester",
 			"silo-buffer"
 		}
+	},
+	{
+		mod = "Krastorio2",
+		name = "kr-medium-container",
+		localeName = "Generic_Logistic_Krastorio2_medium_container",
+		generic = "kr-medium-storage-container",
+		ingredients = {{"kr-medium-container", 1}, {"processing-unit", 5}},
+		replacements = {
+			"kr-medium-passive-provider-container",
+			"kr-medium-active-provider-container",
+			"kr-medium-storage-container",
+			"kr-medium-requester-container",
+			"kr-medium-buffer-container"
+		}
+	},
+	{
+		mod = "Krastorio2",
+		name = "kr-big-container",
+		localeName = "Generic_Logistic_Krastorio2_big_container",
+		generic = "kr-big-storage-container",
+		ingredients = {{"kr-big-container", 1}, {"processing-unit", 5}},
+		replacements = {
+			"kr-big-passive-provider-container",
+			"kr-big-active-provider-container",
+			"kr-big-storage-container",
+			"kr-big-requester-container",
+			"kr-big-buffer-container"
+		}
 	}
 	--[[
 ,
