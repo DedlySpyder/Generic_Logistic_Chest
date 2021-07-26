@@ -156,8 +156,8 @@ end
 
 -- Replacement Chest Generation
 function Generic_Logistic_Generator._internal.createReplacementItem(entityName)
-	local item =  table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
-	item.localised_name = {"Generic_Logistic_generic_prefix", {"item-name." .. item.name}}
+	local item = table.deepcopy(Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName])
+	item.localised_name = Generic_Logistic_Generator._internal.getReplacementLocalisedName(item)
 	item.localised_description = {"item-description." .. item.name}
 	item.name = Config.MOD_PREFIX .. item.name
 	item.order = "zzzzzzzzzzzzzzzzzzzz"
@@ -168,9 +168,24 @@ function Generic_Logistic_Generator._internal.createReplacementItem(entityName)
 	return item
 end
 
+function Generic_Logistic_Generator._internal.getReplacementLocalisedName(item)
+	if item.localised_name then return {"Generic_Logistic_generic_prefix", item.localised_name} end
+
+	local entity = Generic_Logistic_Generator._cache.ENTITY_CACHE[item.place_result]
+	if entity then
+		if entity.localised_name then
+			return {"Generic_Logistic_generic_prefix", entity.localised_name}
+		else
+			return {"Generic_Logistic_generic_prefix", {"entity-name." .. entity.name}}
+		end
+	end
+	Logger:fatal("Failed to find the localized name for %s", item)
+	error("Failed to create generic logistic item for " .. item.name .. ". Please report this error to the mod portal with the factorio-current.log")
+end
+
 function Generic_Logistic_Generator._internal.createReplacementEntity(entityName, genericChestName)
 	local entity = table.deepcopy(Generic_Logistic_Generator._cache.ENTITY_CACHE[entityName])
-	entity.localised_name = {"Generic_Logistic_generic_prefix", {"entity-name." .. entity.name}}
+	entity.localised_name = {"Generic_Logistic_generic_prefix", entity.localised_name or {"entity-name." .. entity.name}}
 	entity.localised_description = {"entity-description." .. entity.name}
 	entity.name = Config.MOD_PREFIX .. entity.name
 	entity.minable.result = genericChestName

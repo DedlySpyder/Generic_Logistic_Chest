@@ -33,7 +33,7 @@ function UI.Selection.draw(player, replacements, chestEntity)
 				type="sprite-button",
 				name=UI.Selection.BUTTON_PREFIX .. replacement,
 				sprite="entity/" .. replacementBaseName,
-				tooltip={"item-name." .. replacementBaseName}
+				tooltip={"entity-name." .. replacementBaseName}
 			}
 		end
 		
