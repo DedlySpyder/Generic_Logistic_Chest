@@ -401,6 +401,86 @@ ChestGroups._RAW = {
 			"kr-big-requester-container",
 			"kr-big-buffer-container"
 		}
+	},
+	{
+		mod = "pyindustry",
+		name = "py-deposit",
+		localeName = "Generic_Logistic_pyindustry_deposit",
+		generic = "py-deposit-storage",
+		ingredients = {
+			{"py-deposit-basic", 1},
+			{"Generic_Logistic_logistic-chest", 1},
+			{"iron-plate", 20},
+			{"processing-unit", 5},
+			{"steel-chest", 15}
+		},
+		replacements = {
+			"py-deposit-passive-provider",
+			"py-deposit-active-provider",
+			"py-deposit-storage",
+			"py-deposit-requester",
+			"py-deposit-buffer"
+		}
+	},
+	{
+		mod = "pyindustry",
+		name = "py-shed",
+		localeName = "Generic_Logistic_pyindustry_shed",
+		generic = "py-shed-storage",
+		ingredients = {
+			{"py-shed-basic", 1},
+			{"Generic_Logistic_logistic-chest", 1},
+			{"iron-plate", 5},
+			{"processing-unit", 2},
+			{"steel-chest", 5}
+		},
+		replacements = {
+			"py-shed-passive-provider",
+			"py-shed-active-provider",
+			"py-shed-storage",
+			"py-shed-requester",
+			"py-shed-buffer"
+		}
+	},
+	{
+		mod = "pyindustry",
+		name = "py-storehouse",
+		localeName = "Generic_Logistic_pyindustry_storehouse",
+		generic = "py-storehouse-storage",
+		ingredients = {
+			{"py-storehouse-basic", 1},
+			{"Generic_Logistic_logistic-chest", 1},
+			{"iron-plate", 5},
+			{"processing-unit", 2},
+			{"steel-chest", 5}
+		},
+		replacements = {
+			"py-storehouse-passive-provider",
+			"py-storehouse-active-provider",
+			"py-storehouse-storage",
+			"py-storehouse-requester",
+			"py-storehouse-buffer"
+		}
+	},
+	{
+		mod = "pyindustry",
+		name = "py-warehouse",
+		localeName = "Generic_Logistic_pyindustry_warehouse",
+		generic = "py-warehouse-storage",
+		ingredients = {
+			{"py-warehouse-basic", 1},
+			{"Generic_Logistic_logistic-chest", 1},
+			{"iron-plate", 20},
+			{"processing-unit", 5},
+			{"steel-chest", 15}
+		},
+		replacements = {
+			"py-warehouse-passive-provider",
+			"py-warehouse-active-provider",
+			"py-warehouse-storage",
+			"py-warehouse-requester",
+			"py-warehouse-buffer"
+		}
 	}
 	--[[
 ,

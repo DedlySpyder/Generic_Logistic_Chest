@@ -13,7 +13,8 @@
     "? boblogistics >= 1.0.0",
     "? aai-containers >= 0.0.1",
     "? angelsaddons-storage >= 0.0.1",
-    "? Krastorio2 >= 0.0.1"
+    "? Krastorio2 >= 0.0.1",
+    "? pyindustry >= 0.0.1"
   ],
   "factorio_version": "1.1"
 }
