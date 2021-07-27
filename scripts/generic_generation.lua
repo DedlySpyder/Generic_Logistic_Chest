@@ -361,6 +361,7 @@ function Generic_Logistic_Generator._cache.cacheEntities(entityNames)
 	for name, prototype in pairs(data.raw["logistic-container"]) do
 		if entityNames[name] then
 			Logger:debug("Caching entity %s", name)
+			Logger:trace(prototype)
 			Generic_Logistic_Generator._cache.ENTITY_CACHE[name] = prototype
 		end
 	end
@@ -371,6 +372,7 @@ function Generic_Logistic_Generator._cache.cacheItems()
 		local placeResult = item.place_result
 		if placeResult and Generic_Logistic_Generator._cache.ENTITY_CACHE[placeResult] then
 			Logger:debug("Caching item %s", name)
+			Logger:trace(item)
 			Generic_Logistic_Generator._cache.ITEM_CACHE[name] = true
 			Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[placeResult] = item
 		end
@@ -379,11 +381,16 @@ end
 
 function Generic_Logistic_Generator._cache.cacheRecipes()
 	for name, recipe in pairs(data.raw["recipe"]) do
-		local result = recipe.result
-		if result and Generic_Logistic_Generator._cache.ITEM_CACHE[result] then
-			Logger:debug("Caching recipe %s", name)
-			Generic_Logistic_Generator._cache.RECIPE_CACHE[name] = true --TODO - make sure this change is still good
-			Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[result] = recipe
+		local results = recipe.results or {{recipe.result, recipe.result_count}}
+		for _, result in ipairs(results) do
+			local resultName = result.name or result[1]
+			if Generic_Logistic_Generator._cache.ITEM_CACHE[resultName] then
+				Logger:debug("Caching recipe %s", name)
+				Logger:trace(recipe)
+				Generic_Logistic_Generator._cache.RECIPE_CACHE[name] = true
+				Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[resultName] = recipe
+				break
+			end
 		end
 	end
 end
@@ -395,6 +402,7 @@ function Generic_Logistic_Generator._cache.cacheTechnologies()
 			for _, effect in ipairs(tech.effects) do
 				if effect.type == "unlock-recipe" and Generic_Logistic_Generator._cache.RECIPE_CACHE[effect.recipe] then
 					Logger:debug("Caching technology %s", name)
+					Logger:trace(tech)
 					Generic_Logistic_Generator._cache.TECH_CACHE[effect.recipe] = tech
 				end
 			end
