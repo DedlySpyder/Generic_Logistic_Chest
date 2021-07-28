@@ -1,4 +1,18 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.3
+Date: 27. 07. 2021
+  Features:
+    - Added AAI Containers support
+    - Added Angel's Addons - Storage Options support
+    - Added Krastorio 2 support
+    - Added Pyanodons Industry support
+  Changes:
+    - Added "primary-place-result" flag on generic items, to stop relying on sort order
+    - Added filters for destroyed/mined events to improve performance
+    - DedLib basic integration (large rewrite likely coming soonish)
+  Bugfixes:
+    - Fixed replacing a generic with the wrong type when rapidly switching between 2 different generic chests
+---------------------------------------------------------------------------------------------------
 Version: 0.5.2
 Date: 24. 12. 2020
   Changes:
