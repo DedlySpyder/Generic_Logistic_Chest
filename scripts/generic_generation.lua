@@ -1,5 +1,6 @@
 local Logger = require("__DedLib__/modules/logger").create{modName = "Generic_Logistic_Chest"}
 local Math = require("__DedLib__/modules/math")
+local Table = require("__DedLib__/modules/table")
 
 local Config = require("scripts/config")
 local DataUtil = require("scripts/data_util")
@@ -228,9 +229,39 @@ function Generic_Logistic_Generator._internal.choseLatestTech(baseEntityNames)
 	for _, tech in pairs(technologies) do
 		if latestTech and tech.prerequisites then
 			if latestTech.prerequisites then
-				for _, prereq in ipairs(tech.prerequisites) do
-					if prereq == latestTech.name then
-						latestTech = tech
+				if Table.indexify(latestTech.prerequisites)[tech.name] then -- TODO - improvement - Table.contains_value or something would probably be cleaner here, I could exit early
+					Logger:debug("Tech %s is a prerequisite for latest tech %s, no need for further comparison for this tech...", tech.name, latestTech.name)
+				else
+					local sharedPrerequisites = false
+					local indexedPrerequisites = Table.indexify(tech.prerequisites)
+					for _, prereq in ipairs(tech.prerequisites) do
+						if prereq == latestTech.name then
+							latestTech = tech
+						elseif indexedPrerequisites[prereq] then
+							sharedPrerequisites = true
+						end
+					end
+
+					-- TODO - write something like this into DedLib? But properly looking at costs, not this meh version
+					if sharedPrerequisites and latestTech ~= tech then
+						local latestTechComparable = Generic_Logistic_Generator._internal.getTechCostComparable(latestTech)
+						local techComparable = Generic_Logistic_Generator._internal.getTechCostComparable(tech)
+
+						Logger:debug("Attempting to compare techs based on cost. Latest <%s>, current <%s>", latestTechComparable, techComparable)
+						local techCostDiff = 0
+						for name, cost in pairs(techComparable) do
+							local latestCost = latestTechComparable[name] or 0
+							techCostDiff = techCostDiff + (cost - latestCost)
+							latestTechComparable[name] = nil
+						end
+						for _, cost in pairs(latestTechComparable) do
+							techCostDiff = techCostDiff - cost
+						end
+
+						if techCostDiff > 0 then
+							Logger:debug("Choosing tech %s over %s due to cost", tech.name, latestTech.name)
+							latestTech = tech
+						end
 					end
 				end
 			else
@@ -243,6 +274,25 @@ function Generic_Logistic_Generator._internal.choseLatestTech(baseEntityNames)
 	end
 	
 	return latestTech
+end
+
+function Generic_Logistic_Generator._internal.getTechCostComparable(tech)
+	local unit = tech.unit
+
+	if not unit or not unit.ingredients then
+		Logger:error("Failed to get tech cost comparable for %s", tech)
+		return {}
+	end
+
+	local comparable = {}
+	for _, i in ipairs(unit.ingredients) do
+		if #i < 2 then
+			Logger:error("Invalid ingredient <%s> in tech %s", i, tech)
+			return {}
+		end
+		comparable[i[1]] = i[2] * unit.count
+	end
+	return comparable
 end
 
 function Generic_Logistic_Generator._internal.calculateGenericOrder(baseEntityNames)
