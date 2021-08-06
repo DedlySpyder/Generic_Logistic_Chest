@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.4
+Date: 05. 08. 2021
+  Changes:
+    - Changed technology picking logic when normal logistic chest technologies are siblings and not prerequisites of each other (mainly impacting Krastorio 2 compatibility)
+    - Removed unused debug setting
+    - Changed migration logic to use LuaForce.reset_technology_effects(), instead of a custom function for recipe handling
+---------------------------------------------------------------------------------------------------
 Version: 0.5.3
 Date: 27. 07. 2021
   Features:
