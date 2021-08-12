@@ -59,6 +59,11 @@ function Generic_Logistic_Generator.generateGroup(name, data)
 	local baseEntities = table.deepcopy(data.replacements)
 	table.insert(baseEntities, genericEntityBase)
 	local tech = Generic_Logistic_Generator._internal.choseLatestTech(baseEntities)
+
+	if not tech then
+		Logger:warn("Latest tech not found for group %s, skipping generation...", name)
+		return
+	end
 	local genericOrder = Generic_Logistic_Generator._internal.calculateGenericOrder(baseEntities)
 
 	Logger:info("Generic chest name: %s", genericName)
@@ -218,14 +223,34 @@ end
 
 function Generic_Logistic_Generator._internal.choseLatestTech(baseEntityNames)
 	local technologies = {}
+	local failCacheGet = function(entityName, stage, lookupValue)
+		error(string.format("Failed to get cache for entity name %s at stage %s with lookup value %s", entityName, stage, lookupValue))
+	end
 	for _, entityName in ipairs(baseEntityNames) do
 		local item = Generic_Logistic_Generator._cache.ITEM_RESULT_CACHE[entityName]
+		if not item then failCacheGet(entityName, "item", entityName) end
+
 		local recipe = Generic_Logistic_Generator._cache.RECIPE_RESULT_CACHE[item.name]
+		if not recipe then failCacheGet(entityName, "recipe", item.name) end
+
+		if recipe.hidden then
+
+		end
 		local tech = Generic_Logistic_Generator._cache.TECH_CACHE[recipe.name]
+		if not tech then
+			if recipe.hidden then
+				-- Someone hide the recipe I care about!
+				Logger:error("Recipe for %s is hidden and had no technology to unlock it, skipping tech chooser...", entityName)
+				return
+			else
+				failCacheGet(entityName, "tech", recipe.name)
+			end
+		end
+
 		technologies[tech.name] = tech -- Distinct techs only
 	end
 	
-	local latestTech = nil
+	local latestTech
 	for _, tech in pairs(technologies) do
 		if latestTech and tech.prerequisites then
 			if latestTech.prerequisites then
