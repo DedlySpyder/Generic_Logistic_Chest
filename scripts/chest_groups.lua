@@ -379,7 +379,8 @@ ChestGroups._RAW = {
 			"angels-warehouse-storage",
 			"angels-warehouse-requester",
 			"angels-warehouse-buffer"
-		}
+		},
+		enabled = "angels-enable-warehouses"
 	},
 	{
 		mod = "angelsaddons-storage",
@@ -393,7 +394,8 @@ ChestGroups._RAW = {
 			"silo-storage",
 			"silo-requester",
 			"silo-buffer"
-		}
+		},
+		enabled = "angels-enable-silos"
 	},
 	{
 		mod = "Krastorio2",
