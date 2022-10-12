@@ -407,7 +407,8 @@ ChestGroups._RAW = {
 			"kr-medium-storage-container",
 			"kr-medium-requester-container",
 			"kr-medium-buffer-container"
-		}
+		},
+		enabled = "kr-containers"
 	},
 	{
 		mod = "Krastorio2",
@@ -421,7 +422,8 @@ ChestGroups._RAW = {
 			"kr-big-storage-container",
 			"kr-big-requester-container",
 			"kr-big-buffer-container"
-		}
+		},
+		enabled = "kr-containers"
 	},
 	{
 		mod = "pyindustry",
