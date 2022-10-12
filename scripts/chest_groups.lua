@@ -13,6 +13,21 @@ ChestGroups._cache.FULL_GROUPING_LIST = nil
 ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS = nil
 ChestGroups._cache.FULL_GROUPING_WITH_ORIGINALS_LIST = nil
 
+function ChestGroups._groupIsEnabled(group)
+	local enabled = group.enabled
+	if group.enabled then
+		local enabledType = type(enabled)
+		if enabledType == "string" then
+			local value = settings.startup[enabled].value
+			Logger:info("Flag for %s is set to %s", group.mod, value)
+			return value
+		end
+	else
+		-- Enabled by default
+		return true
+	end
+end
+
 -- Returns the chest group and whether it should be cached or not
 function ChestGroups.getGroups()
 	Logger:trace("Looking up chest groups")
@@ -20,7 +35,7 @@ function ChestGroups.getGroups()
 		return Table.filter(ChestGroups._RAW, function(group)
 			if mods[group.mod] then
 				Logger:info("Found group for %s prerequisite mod %s enabled", group.name, group.mod)
-				return true
+				return ChestGroups._groupIsEnabled(group)
 			else
 				Logger:info("Skipping group for %s prerequisite mod %s disabled", group.name, group.mod)
 				return false
@@ -28,7 +43,13 @@ function ChestGroups.getGroups()
 		end), true
 	elseif game then
 		return Table.filter(ChestGroups._RAW, function(group)
-			return game.active_mods[group.mod]
+			if game.active_mods[group.mod] then
+				Logger:info("Found group for %s prerequisite mod %s enabled", group.name, group.mod)
+				return ChestGroups._groupIsEnabled(group)
+			else
+				Logger:info("Skipping group for %s prerequisite mod %s disabled", group.name, group.mod)
+				return false
+			end
 		end), true
 	else
 		Logger:warn("Could not find active mod list, returning all chest groups")
