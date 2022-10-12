@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.7
+Date: 12. 10. 2022
+  Bugfixes:
+    - Fixed interaction with mods that can toggle logistic chests on/off (currently Krastorio2 and Angel's Storage Options)
+---------------------------------------------------------------------------------------------------
 Version: 0.5.6
 Date: 10. 12. 2021
   Features:
